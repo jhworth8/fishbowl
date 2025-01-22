@@ -1,1069 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Pixel Fish Aquarium Idle - Remade & Improved</title>
-  
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  
-  <!-- Bootstrap CSS (for nice modals, buttons, etc.) -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  
-  <!-- jQuery (still used for event handling & DOM manipulation) -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
-  <style>
-    /********************************************************
-     ********************** BASIC RESET *********************
-     ********************************************************/
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #1e3d59;
-      font-family: 'Press Start 2P', cursive;
-      position: relative;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idle Aquarium</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS (Optional for layout) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /********************************************************
-     ********************** TOP BAR *************************
-     ********************************************************/
-    .top-bar {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 95%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 1000;
-    }
-    .top-bar > div {
-      background-color: rgba(255, 255, 255, 0.9);
-      padding: 8px 15px;
-      border-radius: 5px;
-      margin: 0 4px;
-      cursor: pointer;
-      user-select: none;
-      transition: background-color 0.3s;
-      position: relative;
-    }
-    .top-bar > div:hover {
-      background-color: rgba(255, 255, 255, 1);
-    }
-    .coin-display {
-      pointer-events: none;
-    }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to bottom, #a1c4fd, #c2e9fb);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
 
-    /********************************************************
-     ********************** AQUARIUM ************************
-     ********************************************************/
-    #aquarium {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-size: cover;
-      background-repeat: no-repeat;
-      /* For a background image, uncomment and adjust:
-         background-image: url('aquarium_background.png');
-      */
-    }
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
 
-    /********************************************************
-     ********************** FISH ****************************
-     ********************************************************/
-    .fish {
-      position: absolute;
-      background-size: contain;
-      background-repeat: no-repeat;
-      transform-origin: center;
-      transition: 
-        transform 0.5s, 
-        left 0.5s linear, 
-        top 0.5s linear;
-    }
+        #aquarium {
+            position: relative;
+            width: 90%;
+            max-width: 1200px;
+            height: 80vh;
+            background: #1e90ff;
+            border: 5px solid #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
 
-    /********************************************************
-     ********************** FOOD ****************************
-     ********************************************************/
-    .food {
-      position: absolute;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      image-rendering: pixelated;
-      z-index: 500;
-      animation: drop 2s linear forwards;
-    }
-    @keyframes drop {
-      0%   { top: 0; }
-      100% { top: 90%; }
-    }
+        .fish {
+            position: absolute;
+            width: 80px;
+            transition: transform 2s linear;
+            cursor: pointer;
+        }
 
-    /********************************************************
-     ********************** BUBBLES *************************
-     ********************************************************/
-    .bubble {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background-color: rgba(255, 255, 255, 0.5);
-      border-radius: 50%;
-      animation: bubble-rise 5s linear infinite;
-      pointer-events: none;
-      opacity: 0.7;
-    }
-    @keyframes bubble-rise {
-      0%   { transform: translateY(0) scale(1); opacity: 0.7; }
-      50%  { transform: translateY(-150px) scale(1.2); }
-      100% { transform: translateY(-300px) scale(1); opacity: 0; }
-    }
+        /* Bubble Animation */
+        .bubble {
+            position: absolute;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: rise 5s infinite ease-in;
+        }
 
-    /********************************************************
-     ******************** FLOATING TEXT *********************
-     ********************************************************/
-    .floating-text {
-      position: absolute;
-      color: #fff;
-      font-size: 14px;
-      font-weight: bold;
-      pointer-events: none;
-      animation: floatUp 2s ease-out forwards;
-      text-shadow: 1px 1px 2px #000;
-    }
-    @keyframes floatUp {
-      from { opacity: 1;   transform: translateY(0); }
-      to   { opacity: 0;   transform: translateY(-50px); }
-    }
+        @keyframes rise {
+            from {
+                bottom: -50px;
+                opacity: 0.8;
+            }
+            to {
+                bottom: 100%;
+                opacity: 0;
+            }
+        }
 
-    /********************************************************
-     ********************* MODAL STYLES *********************
-     ********************************************************/
-    .modal-overlay {
-      position: fixed;
-      top: 0; 
-      left: 0;
-      width: 100%; 
-      height: 100%;
-      background-color: rgba(0,0,0,0.7);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-    }
-    .modal-content {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      width: 85%;
-      max-width: 700px;
-      max-height: 85%;
-      overflow-y: auto;
-      animation: fadeIn 0.5s;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .modal-header h2 {
-      font-size: 16px;
-    }
-    .close-modal {
-      cursor: pointer;
-      font-size: 20px;
-      font-weight: bold;
-    }
-    .item-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #ccc;
-    }
-    .item-row img {
-      width: 50px;
-      height: 40px;
-      image-rendering: pixelated;
-    }
-    .item-row button {
-      padding: 5px 10px;
-      background-color: #1e90ff;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    .item-row button:hover {
-      background-color: #3742fa;
-    }
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .fish {
+                width: 60px;
+            }
+        }
 
-    /********************************************************
-     ************** ACHIEVEMENTS BUTTON BADGE ***************
-     ********************************************************/
-    .achievements-button {
-      position: relative;
-    }
-    .achievements-button::after {
-      content: attr(data-badge);
-      position: absolute;
-      top: -5px; 
-      right: -10px;
-      background: red;
-      color: white;
-      border-radius: 50%;
-      padding: 2px 6px;
-      font-size: 10px;
-      display: none;
-    }
-    .has-new-achievements.achievements-button::after {
-      display: block;
-    }
-
-    /********************************************************
-     ******************* RESPONSIVE DESIGN ******************
-     ********************************************************/
-    @media (max-width: 768px) {
-      .fish { 
-        width: 50px; 
-        height: 35px; 
-      }
-      .food { 
-        width: 12px; 
-        height: 12px; 
-      }
-      .item-row img { 
-        width: 40px; 
-        height: 30px; 
-      }
-    }
-  </style>
+        @media (max-width: 480px) {
+            .fish {
+                width: 40px;
+            }
+        }
+    </style>
 </head>
-
 <body>
-  <!-- ================== TOP BAR ================== -->
-  <div class="top-bar">
-    <div class="store-button">Store</div>
-    <div class="upgrades-button">Upgrades</div>
-    <div class="expansions-button">Expansions</div>
-    <div class="achievements-button" data-badge="0">Achievements</div>
-    <div class="reset-button">Reset</div>
-    <div class="coin-display">Coins: <span id="coin-count">0</span></div>
-  </div>
+    <h1>Idle Aquarium</h1>
+    <div id="aquarium"></div>
 
-  <!-- ================== AQUARIUM ================== -->
-  <div id="aquarium"></div>
+    <!-- Bootstrap JS (Optional for interactivity) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery (Optional if needed) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Aquarium Configuration
+        const aquarium = document.getElementById('aquarium');
+        const fishImages = [];
+        const numberOfFish = 10; // Initial number of fish
+        const maxFish = 20; // Maximum number of fish
+        const fishSpeed = { min: 2000, max: 5000 }; // Speed range in ms
 
-  <!-- ================== MODALS ================== -->
-  <!-- Store Modal -->
-  <div class="modal-overlay store-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Fish Store</h2>
-        <span class="close-modal">&times;</span>
-      </div>
-      <div id="store-items"></div>
-    </div>
-  </div>
-
-  <!-- Upgrades Modal -->
-  <div class="modal-overlay upgrades-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Upgrades</h2>
-        <span class="close-modal">&times;</span>
-      </div>
-      <div id="upgrade-items"></div>
-    </div>
-  </div>
-
-  <!-- Expansions Modal -->
-  <div class="modal-overlay expansions-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Expansions</h2>
-        <span class="close-modal">&times;</span>
-      </div>
-      <div id="expansion-items"></div>
-    </div>
-  </div>
-
-  <!-- Achievements Modal -->
-  <div class="modal-overlay achievements-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Achievements</h2>
-        <span class="close-modal">&times;</span>
-      </div>
-      <div id="achievement-items"></div>
-    </div>
-  </div>
-
-  <!-- Optional Sound Effects -->
-  <!--
-    <audio id="sound-eat" src="eat_sound.mp3"></audio>
-    <audio id="sound-buy" src="buy_sound.mp3"></audio>
-    <audio id="sound-reset" src="reset_sound.mp3"></audio>
-  -->
-
-  <!-- ================== GAME SCRIPT ================== -->
-  <script>
-    /********************************************************
-     ********************** ON READY ************************
-     ********************************************************/
-    $(document).ready(() => {
-      /* 
-        =======================================================
-        ===================== GAME DATA =======================
-        =======================================================
-      */
-
-      let coins = 0;
-
-      // Fish definitions
-      // (Feel free to tweak cost, speed, etc. for balance)
-      const fishTypes = [];
-      for (let i = 1; i <= 10; i++) {
-        fishTypes.push({
-          id: i,
-          name: 'Fish ' + i,
-          cost: 50 * i,
-          earning: i,                   // coins per food eaten
-          image: `fish_${i}.png`,       // example: fish_1.png
-          baseSpeed: 2 + i * 0.2,
-          growthThreshold: 5
-        });
-      }
-
-      // Owned fish array (populated at runtime)
-      // Each fish has: { id, x, y, direction, targetFoodId, sizeStage, foodEaten }
-      let ownedFish = [];
-
-      // Food definitions & array
-      const foodTypes = [
-        { type: 'basic',   color: '#ffcc00', coinValue: 1 },
-        { type: 'premium', color: '#ff66ff', coinValue: 5 },
-        { type: 'gold',    color: '#00ff00', coinValue: 10 }
-      ];
-      let foodItems = [];
-
-      // Upgrades
-      const upgrades = [
-        {
-          id: 1,
-          name: 'Coin Multiplier 1',
-          description: 'Increase all coin earnings by 25%',
-          cost: 500,
-          purchased: false,
-          effect: () => {
-            fishTypes.forEach(f => { f.earning *= 1.25; });
-          }
-        },
-        {
-          id: 2,
-          name: 'Speed Booster 1',
-          description: 'Increase all fish speed by 20%',
-          cost: 800,
-          purchased: false,
-          effect: () => {
-            fishTypes.forEach(f => { f.baseSpeed *= 1.2; });
-          }
-        }
-        // Add more upgrades as you like
-      ];
-
-      // Expansions (generate coins or spawn extra food automatically)
-      const expansions = [
-        {
-          id: 1,
-          name: 'Turtle',
-          description: 'Generates 1 coin/s per turtle owned.',
-          cost: 200,
-          purchasedCount: 0,
-          baseEffect: 1,     // coin production
-          effectType: 'coins',
-          effectRate: 1
-        },
-        {
-          id: 2,
-          name: 'Crab',
-          description: 'Generates 5 coins/s per crab owned.',
-          cost: 1000,
-          purchasedCount: 0,
-          baseEffect: 5,     // coin production
-          effectType: 'coins',
-          effectRate: 1
-        },
-        {
-          id: 3,
-          name: 'Auto Feeder',
-          description: 'Automatically drops food into the aquarium.',
-          cost: 500,
-          purchasedCount: 0,
-          baseEffect: 1,     // food production
-          effectType: 'food',
-          effectRate: 0.2    // 0.2 foods/s per purchased feeder
-        }
-        // More expansions possible
-      ];
-
-      // Achievements
-      const achievements = [
-        {
-          id: 1,
-          name: 'First Fish',
-          description: 'Purchase your first fish.',
-          achieved: false,
-          condition: () => ownedFish.length >= 1
-        },
-        {
-          id: 2,
-          name: 'Wealthy (1k)',
-          description: 'Accumulate 1,000 coins.',
-          achieved: false,
-          condition: () => coins >= 1000
-        },
-        {
-          id: 3,
-          name: 'Feeding Frenzy',
-          description: 'Consume 50 pieces of food in total.',
-          achieved: false,
-          condition: () => ownedFish.reduce((sum, f) => sum + f.foodEaten, 0) >= 50
-        },
-        {
-          id: 4,
-          name: 'Big Fish',
-          description: 'Grow any fish to size stage 2 (large).',
-          achieved: false,
-          condition: () => ownedFish.some(f => f.sizeStage >= 2)
-        },
-        {
-          id: 5,
-          name: 'Expansive',
-          description: 'Purchase at least one of any expansion.',
-          achieved: false,
-          condition: () => expansions.some(e => e.purchasedCount > 0)
-        },
-        {
-          id: 6,
-          name: 'Coin Hoarder',
-          description: 'Accumulate 10,000 coins.',
-          achieved: false,
-          condition: () => coins >= 10000
-        },
-        {
-          id: 7,
-          name: 'Food Master',
-          description: 'Consume 200 pieces of food in total.',
-          achieved: false,
-          condition: () => ownedFish.reduce((sum, f) => sum + f.foodEaten, 0) >= 200
-        }
-        // Add more achievements if desired
-      ];
-
-      // Timers and intervals
-      let bubbleTimer, saveInterval, expansionsInterval;
-      let achievementNotifications = 0;
-
-      // Track last update time for idle coin generation
-      let lastUpdateTime = Date.now();
-
-
-      /* 
-        =======================================================
-        =============== LOADING & SAVING GAME =================
-        =======================================================
-      */
-      const loadGame = () => {
-        // Load coins
-        const savedCoins = localStorage.getItem('coins');
-        if (savedCoins) coins = parseFloat(savedCoins);
-
-        // Load fish
-        const savedFish = localStorage.getItem('ownedFish');
-        if (savedFish) ownedFish = JSON.parse(savedFish);
-
-        // If no fish, give a free fish
-        if (ownedFish.length === 0) {
-          ownedFish.push({
-            id: 1,
-            x: 100,
-            y: 100,
-            direction: 'right',
-            targetFoodId: null,
-            sizeStage: 0,
-            foodEaten: 0
-          });
+        // Load Fish Images
+        for (let i = 1; i <= 10; i++) {
+            fishImages.push(`fish_${i}.png`);
         }
 
-        // Load upgrades
-        const savedUpgrades = localStorage.getItem('upgrades');
-        if (savedUpgrades) {
-          const purchasedList = JSON.parse(savedUpgrades);
-          purchasedList.forEach(uId => {
-            const upg = upgrades.find(u => u.id === uId);
-            if (upg && !upg.purchased) {
-              upg.purchased = true;
-              upg.effect();
-            }
-          });
-        }
+        // Function to create a fish element
+        function createFish() {
+            const fish = document.createElement('img');
+            fish.src = fishImages[Math.floor(Math.random() * fishImages.length)];
+            fish.classList.add('fish');
 
-        // Load expansions
-        const savedExpansions = localStorage.getItem('expansions');
-        if (savedExpansions) {
-          const expansionsData = JSON.parse(savedExpansions);
-          expansionsData.forEach(e => {
-            const ex = expansions.find(x => x.id === e.id);
-            if (ex) ex.purchasedCount = e.purchasedCount;
-          });
-        }
+            // Random initial position
+            fish.style.top = `${Math.random() * (aquarium.clientHeight - 100)}px`;
+            fish.style.left = `${Math.random() * (aquarium.clientWidth - 100)}px`;
 
-        // Load achievements
-        const savedAchievements = localStorage.getItem('achievements');
-        if (savedAchievements) {
-          const achData = JSON.parse(savedAchievements);
-          achData.forEach(aId => {
-            const a = achievements.find(x => x.id === aId);
-            if (a) a.achieved = true;
-          });
-        }
+            // Random size
+            const size = Math.random() * 0.5 + 0.75; // Scale between 0.75 to 1.25
+            fish.style.transform = `scale(${size})`;
 
-        // Idle coin/food generation
-        const savedLastUpdate = localStorage.getItem('lastUpdateTime');
-        if (savedLastUpdate) {
-          const currentTime = Date.now();
-          const elapsed = (currentTime - parseInt(savedLastUpdate)) / 1000; // seconds
-          expansions.forEach(exp => {
-            if (exp.purchasedCount > 0) {
-              if (exp.effectType === 'coins') {
-                coins += exp.baseEffect * exp.purchasedCount * elapsed;
-              } else if (exp.effectType === 'food') {
-                // auto feeder
-                const totalFoods = Math.floor(exp.baseEffect * exp.purchasedCount * elapsed);
-                for (let i = 0; i < totalFoods; i++) {
-                  spawnFood();
-                }
-              }
-            }
-          });
-        }
-        lastUpdateTime = parseInt(localStorage.getItem('lastUpdateTime')) || Date.now();
-      };
-
-      const saveGame = () => {
-        localStorage.setItem('coins', coins);
-        localStorage.setItem('ownedFish', JSON.stringify(ownedFish));
-
-        const purchasedUpg = upgrades.filter(u => u.purchased).map(u => u.id);
-        localStorage.setItem('upgrades', JSON.stringify(purchasedUpg));
-
-        const expansionsData = expansions.map(e => ({ id: e.id, purchasedCount: e.purchasedCount }));
-        localStorage.setItem('expansions', JSON.stringify(expansionsData));
-
-        const achievedList = achievements.filter(a => a.achieved).map(a => a.id);
-        localStorage.setItem('achievements', JSON.stringify(achievedList));
-
-        localStorage.setItem('lastUpdateTime', Date.now());
-      };
-
-
-      /* 
-        =======================================================
-        ====================== RENDER UI ======================
-        =======================================================
-      */
-      const updateCoinDisplay = () => {
-        $('#coin-count').text(Math.floor(coins));
-        checkAchievements();
-      };
-
-      // Store UI
-      const renderStore = () => {
-        $('#store-items').empty();
-        fishTypes.forEach(f => {
-          const ownedCount = ownedFish.filter(x => x.id === f.id).length;
-          const row = $(`
-            <div class="item-row">
-              <div>
-                <img src="${f.image}" alt="${f.name}">
-                <span>${f.name} (Owned: ${ownedCount})</span>
-              </div>
-              <div>
-                <button data-id="${f.id}">Buy (${Math.floor(f.cost)} coins)</button>
-              </div>
-            </div>
-          `);
-          $('#store-items').append(row);
-        });
-      };
-
-      // Upgrades UI
-      const renderUpgrades = () => {
-        $('#upgrade-items').empty();
-        upgrades.forEach(u => {
-          const btnText = u.purchased ? 'Purchased' : `Buy (${u.cost} coins)`;
-          const disabled = u.purchased ? 'disabled' : '';
-          const row = $(`
-            <div class="item-row">
-              <div>
-                <strong>${u.name}</strong>
-                <p>${u.description}</p>
-              </div>
-              <div>
-                <button data-id="${u.id}" ${disabled}>${btnText}</button>
-              </div>
-            </div>
-          `);
-          $('#upgrade-items').append(row);
-        });
-      };
-
-      // Expansions UI
-      const renderExpansions = () => {
-        $('#expansion-items').empty();
-        expansions.forEach(e => {
-          const row = $(`
-            <div class="item-row">
-              <div>
-                <strong>${e.name}</strong>
-                <p>${e.description}</p>
-                <p>Owned: ${e.purchasedCount}</p>
-              </div>
-              <div>
-                <button data-id="${e.id}">Buy (${e.cost} coins)</button>
-              </div>
-            </div>
-          `);
-          $('#expansion-items').append(row);
-        });
-      };
-
-      // Achievements UI
-      const renderAchievements = () => {
-        $('#achievement-items').empty();
-        achievements.forEach(a => {
-          const status = a.achieved 
-            ? '<span class="badge bg-success">Achieved</span>'
-            : '<span class="badge bg-secondary">Locked</span>';
-          const row = $(`
-            <div class="item-row">
-              <div>
-                <strong>${a.name}</strong>
-                <p>${a.description}</p>
-              </div>
-              <div>${status}</div>
-            </div>
-          `);
-          $('#achievement-items').append(row);
-        });
-      };
-
-
-      /* 
-        =======================================================
-        ============= FISH & FOOD RENDERING/LOGIC =============
-        =======================================================
-      */
-      const renderFish = () => {
-        $('#aquarium .fish').remove();
-        ownedFish.forEach((f, index) => {
-          const fishDiv = $(`<div class="fish" data-index="${index}"></div>`);
-          fishDiv.css({
-            left: f.x + 'px',
-            top: f.y + 'px',
-            backgroundImage: `url(${fishTypes[f.id - 1].image})`,
-            transform: f.direction === 'left' ? 'scaleX(-1)' : 'scaleX(1)'
-          });
-          // Adjust size based on sizeStage
-          const baseW = 60, baseH = 40;
-          const newW = baseW + (15 * f.sizeStage);
-          const newH = baseH + (10 * f.sizeStage);
-          fishDiv.css({ width: `${newW}px`, height: `${newH}px` });
-
-          $('#aquarium').append(fishDiv);
-        });
-      };
-
-      const renderFoodItems = () => {
-        $('#aquarium .food').remove();
-        foodItems.forEach(food => {
-          const fd = $(`<div class="food"></div>`);
-          fd.attr('data-id', food.id);
-          fd.css({
-            left: food.x + 'px',
-            top: food.y + 'px',
-            backgroundColor: food.color
-          });
-          $('#aquarium').append(fd);
-        });
-      };
-
-      // Fish growth
-      const handleFishGrowth = fishObj => {
-        const fishType = fishTypes[fishObj.id - 1];
-        const neededToGrow = fishType.growthThreshold * (fishObj.sizeStage + 1);
-        if (fishObj.foodEaten >= neededToGrow) {
-          fishObj.sizeStage++;
-        }
-      };
-
-      // Assign or update fish targets
-      const updateFishTargets = () => {
-        ownedFish.forEach(fish => {
-          if (fish.targetFoodId === null) {
-            let closestFood = null;
-            let closestDist = Infinity;
-            // Find the nearest untargeted food
-            foodItems.forEach(food => {
-              if (food.targetedByFishId === null) {
-                const dist = Math.hypot(food.x - fish.x, food.y - fish.y);
-                if (dist < closestDist) {
-                  closestDist = dist;
-                  closestFood = food;
-                }
-              }
+            // Add click event
+            fish.addEventListener('click', () => {
+                // Simple interaction: Change direction on click
+                moveFish(fish);
             });
-            if (closestFood) {
-              fish.targetFoodId = closestFood.id;
-              closestFood.targetedByFishId = fish.id;
-            }
-          }
-        });
-      };
 
-      // Move fish and check for food consumption
-      const moveFish = () => {
-        ownedFish.forEach((fish, index) => {
-          const fType = fishTypes[fish.id - 1];
-          const speed = fType.baseSpeed;
-
-          if (fish.targetFoodId !== null) {
-            // Move fish toward its target
-            const targetFood = foodItems.find(fd => fd.id === fish.targetFoodId);
-            if (targetFood) {
-              const dx = targetFood.x - fish.x;
-              const dy = targetFood.y - fish.y;
-              const dist = Math.hypot(dx, dy);
-
-              fish.direction = dx < 0 ? 'left' : 'right';
-
-              if (dist <= speed) {
-                // Reached the food
-                coins += fType.earning * targetFood.coinValue;
-                updateCoinDisplay();
-
-                // Sound effect if desired: $('#sound-eat')[0].play();
-
-                fish.foodEaten++;
-                handleFishGrowth(fish);
-                createFloatingText(targetFood.x, targetFood.y, `+${fType.earning * targetFood.coinValue}`);
-
-                // Remove the food from array
-                foodItems = foodItems.filter(fd => fd.id !== targetFood.id);
-                fish.targetFoodId = null;
-              } else {
-                // Move closer
-                fish.x += (dx / dist) * speed;
-                fish.y += (dy / dist) * speed;
-              }
-            } else {
-              // Food no longer exists
-              fish.targetFoodId = null;
-            }
-          } else {
-            // Ambient drifting
-            const angle = Math.random() * 2 * Math.PI;
-            fish.x += Math.cos(angle) * 0.5; 
-            fish.y += Math.sin(angle) * 0.5;
-          }
-
-          // Constrain fish within the screen
-          const fishW = 60 + (15 * fish.sizeStage);
-          const fishH = 40 + (10 * fish.sizeStage);
-          const winW = $(window).width();
-          const winH = $(window).height();
-          fish.x = Math.max(0, Math.min(winW - fishW, fish.x));
-          fish.y = Math.max(0, Math.min(winH - fishH, fish.y));
-
-          // Update fish DOM
-          const fishDiv = $(`.fish[data-index="${index}"]`);
-          fishDiv.css({
-            left: fish.x + 'px',
-            top: fish.y + 'px',
-            transform: fish.direction === 'left' ? 'scaleX(-1)' : 'scaleX(1)'
-          });
-        });
-      };
-
-      // Spawn random food
-      const spawnFood = () => {
-        const pick = Math.random();
-        let foodType;
-        if (pick < 0.7) {
-          foodType = foodTypes[0];   // basic
-        } else if (pick < 0.9) {
-          foodType = foodTypes[1];   // premium
-        } else {
-          foodType = foodTypes[2];   // gold
+            aquarium.appendChild(fish);
+            moveFish(fish);
         }
-        const fObj = {
-          id: Date.now() + Math.random(),
-          x: Math.random() * ($(window).width() - 14),
-          y: 0,
-          type: foodType.type,
-          color: foodType.color,
-          coinValue: foodType.coinValue,
-          targetedByFishId: null
+
+        // Function to move fish to a random position
+        function moveFish(fish) {
+            const aquariumWidth = aquarium.clientWidth;
+            const aquariumHeight = aquarium.clientHeight;
+
+            const newX = Math.random() * (aquariumWidth - fish.clientWidth);
+            const newY = Math.random() * (aquariumHeight - fish.clientHeight);
+
+            // Determine direction
+            const direction = newX > parseFloat(fish.style.left) ? 1 : -1;
+            fish.style.transform = `scale(${parseFloat(fish.style.transform.match(/scale\(([^)]+)\)/)[1])}) rotateY(${direction === -1 ? 180 : 0}deg)`;
+
+            // Animate movement
+            fish.style.transition = `transform ${Math.random() * (fishSpeed.max - fishSpeed.min) + fishSpeed.min}ms linear, left ${Math.random() * (fishSpeed.max - fishSpeed.min) + fishSpeed.min}ms linear, top ${Math.random() * (fishSpeed.max - fishSpeed.min) + fishSpeed.min}ms linear`;
+            fish.style.left = `${newX}px`;
+            fish.style.top = `${newY}px`;
+
+            // Schedule next movement
+            setTimeout(() => moveFish(fish), Math.random() * (fishSpeed.max - fishSpeed.min) + fishSpeed.min);
+        }
+
+        // Function to create bubbles
+        function createBubble() {
+            const bubble = document.createElement('div');
+            const size = Math.random() * 20 + 10; // 10px to 30px
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${Math.random() * (aquarium.clientWidth - size)}px`;
+            bubble.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            bubble.style.opacity = Math.random();
+
+            bubble.classList.add('bubble');
+            aquarium.appendChild(bubble);
+
+            // Remove bubble after animation
+            bubble.addEventListener('animationend', () => {
+                bubble.remove();
+            });
+        }
+
+        // Initialize Aquarium
+        function initAquarium() {
+            for (let i = 0; i < numberOfFish; i++) {
+                createFish();
+            }
+
+            // Create bubbles periodically
+            setInterval(createBubble, 1000);
+        }
+
+        // Start the aquarium when the page loads
+        window.onload = initAquarium;
+
+        // Handle window resize for responsiveness
+        window.onresize = () => {
+            // Optional: Adjust fish positions or aquarium elements if needed
         };
-        foodItems.push(fObj);
-        renderFoodItems();
-      };
-
-      // Create floating text
-      const createFloatingText = (x, y, text) => {
-        const ft = $(`<div class="floating-text">${text}</div>`);
-        ft.css({ left: x + 'px', top: y + 'px' });
-        $('#aquarium').append(ft);
-        setTimeout(() => { ft.remove(); }, 2000); 
-      };
-
-
-      /* 
-        =======================================================
-        ==================== EXPANSIONS =======================
-        =======================================================
-      */
-      const runExpansions = () => {
-        expansions.forEach(exp => {
-          if (exp.purchasedCount > 0) {
-            if (exp.effectType === 'coins') {
-              coins += exp.baseEffect * exp.purchasedCount * exp.effectRate;
-            } else if (exp.effectType === 'food') {
-              // produce food
-              // effectRate is foods/sec, so each second we spawn that many
-              const spawnCount = exp.baseEffect * exp.purchasedCount * exp.effectRate;
-              const integerSpawn = Math.floor(spawnCount);
-              for (let i = 0; i < integerSpawn; i++) {
-                spawnFood();
-              }
-            }
-          }
-        });
-        updateCoinDisplay();
-      };
-
-
-      /* 
-        =======================================================
-        ================== ACHIEVEMENTS =======================
-        =======================================================
-      */
-      const checkAchievements = () => {
-        achievements.forEach(a => {
-          if (!a.achieved && a.condition()) {
-            a.achieved = true;
-            achievementNotifications++;
-            alert(`Achievement Unlocked: ${a.name}!`);
-          }
-        });
-        if (achievementNotifications > 0) {
-          $('.achievements-button').addClass('has-new-achievements');
-          $('.achievements-button').attr('data-badge', achievementNotifications);
-        }
-      };
-
-
-      /* 
-        =======================================================
-        ==================== BUBBLES ==========================
-        =======================================================
-      */
-      const spawnBubble = () => {
-        const bubble = $('<div class="bubble"></div>');
-        const startX = Math.random() * ($(window).width() - 10);
-        bubble.css({ left: startX + 'px', bottom: '0px' });
-        $('#aquarium').append(bubble);
-        setTimeout(() => { bubble.remove(); }, 5000);
-      };
-
-
-      /* 
-        =======================================================
-        ==================== EVENT HANDLERS ===================
-        =======================================================
-      */
-      // Open/Close modals
-      const openModal = sel => { $(sel).fadeIn(); };
-      const closeModal = sel => { $(sel).fadeOut(); };
-
-      $('.store-button').click(() => {
-        renderStore();
-        openModal('.store-modal');
-      });
-      $('.upgrades-button').click(() => {
-        renderUpgrades();
-        openModal('.upgrades-modal');
-      });
-      $('.expansions-button').click(() => {
-        renderExpansions();
-        openModal('.expansions-modal');
-      });
-      $('.achievements-button').click(() => {
-        renderAchievements();
-        openModal('.achievements-modal');
-        achievementNotifications = 0;
-        $('.achievements-button').removeClass('has-new-achievements');
-        $('.achievements-button').attr('data-badge', 0);
-      });
-      $('.reset-button').click(() => {
-        if (confirm('Are you sure you want to reset all progress? This action cannot be undone.')) {
-          // Reset sound effect if you want: $('#sound-reset')[0].play();
-          localStorage.clear();
-          location.reload();
-        }
-      });
-      $('.close-modal').click(function() {
-        closeModal($(this).closest('.modal-overlay'));
-      });
-
-      // Buy fish
-      $('#store-items').on('click', 'button', function() {
-        const fishId = parseInt($(this).data('id'));
-        const fishType = fishTypes.find(f => f.id === fishId);
-        if (!fishType) return;
-        if (coins >= fishType.cost) {
-          coins -= fishType.cost;
-          updateCoinDisplay();
-
-          // Purchase sound: $('#sound-buy')[0].play();
-
-          ownedFish.push({
-            id: fishType.id,
-            x: Math.random() * ($(window).width() - 60),
-            y: Math.random() * ($(window).height() - 40),
-            direction: 'right',
-            targetFoodId: null,
-            sizeStage: 0,
-            foodEaten: 0
-          });
-          renderFish();
-          checkAchievements();
-        } else {
-          alert('Not enough coins!');
-        }
-      });
-
-      // Buy upgrades
-      $('#upgrade-items').on('click', 'button', function() {
-        const upgId = parseInt($(this).data('id'));
-        const upg = upgrades.find(u => u.id === upgId);
-        if (!upg || upg.purchased) return;
-        if (coins >= upg.cost) {
-          coins -= upg.cost;
-          upg.purchased = true;
-          upg.effect();
-          updateCoinDisplay();
-          renderUpgrades();
-        } else {
-          alert('Not enough coins!');
-        }
-      });
-
-      // Buy expansions
-      $('#expansion-items').on('click', 'button', function() {
-        const expId = parseInt($(this).data('id'));
-        const ex = expansions.find(e => e.id === expId);
-        if (!ex) return;
-        if (coins >= ex.cost) {
-          coins -= ex.cost;
-          ex.purchasedCount++;
-          updateCoinDisplay();
-          renderExpansions();
-          checkAchievements();
-        } else {
-          alert('Not enough coins!');
-        }
-      });
-
-      // Spacebar to drop manual food
-      $(document).keydown(e => {
-        if (e.code === 'Space') {
-          e.preventDefault(); 
-          spawnManualFood();
-        }
-      });
-      const spawnManualFood = () => {
-        const foodType = foodTypes[0]; // Always basic if dropped manually
-        const fObj = {
-          id: Date.now() + Math.random(),
-          x: Math.random() * ($(window).width() - 14),
-          y: 0,
-          type: foodType.type,
-          color: foodType.color,
-          coinValue: foodType.coinValue,
-          targetedByFishId: null
-        };
-        foodItems.push(fObj);
-        renderFoodItems();
-      };
-
-
-      /* 
-        =======================================================
-        ==================== MAIN GAME LOOP ===================
-        =======================================================
-      */
-      const gameLoop = () => {
-        updateFishTargets();
-        moveFish();
-        renderFoodItems(); // keep updating in case foods are consumed
-        requestAnimationFrame(gameLoop);
-      };
-
-
-      /* 
-        =======================================================
-        ===================== INIT & START ====================
-        =======================================================
-      */
-      loadGame();
-      renderFish();
-      renderFoodItems();
-      updateCoinDisplay();
-
-      gameLoop();
-
-      // Food spawns more frequently for an "active" feel
-      setInterval(spawnFood, 3000);
-
-      // Expansions effect loop (coins, auto-food)
-      expansionsInterval = setInterval(runExpansions, 1000);
-
-      // Ambient bubbles
-      bubbleTimer = setInterval(spawnBubble, 2000);
-
-      // Auto-save
-      saveInterval = setInterval(saveGame, 15000);
-
-      // Save once before closing
-      $(window).on('beforeunload', () => { saveGame(); });
-    });
-  </script>
+    </script>
 </body>
 </html>
