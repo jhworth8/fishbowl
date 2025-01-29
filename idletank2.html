@@ -37,6 +37,7 @@
     .navbar .navbar-brand {
       font-size: 16px;
       margin-right: 15px;
+      
       display: flex;
       align-items: center;
     }
@@ -67,6 +68,17 @@
 
     /* ******************** FISH *************************** */
     .fish { position: absolute; background-size: contain; background-repeat: no-repeat; transform-origin: center; transition: transform 0.3s, left 0.3s linear, top 0.3s linear, filter 0.3s; width: 96px; height: 64px; }
+    .fish.level-up-shimmer { animation: level-up-shimmer 1s ease-in-out infinite alternate; }
+    @keyframes level-up-shimmer {
+        from { filter: brightness(1); }
+        to { filter: brightness(1.5); }
+    }
+    .level-up-text { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); color: gold; font-size: 12px; text-shadow: 1px 1px black; white-space: nowrap; animation: floatUpLevel 2s ease-out forwards; }
+    @keyframes floatUpLevel {
+        0%   { opacity: 1;   transform: translateY(0) translateX(-50%); }
+        100% { opacity: 0;   transform: translateY(-40px) translateX(-50%); }
+    }
+
 
     /* ******************** FOOD **************************** */
     .food { position: absolute; width: 32px; height: 32px; border-radius: 50%; z-index: 500; }
@@ -87,17 +99,17 @@
 
     /* ******************** BUBBLES ************************** */
     .bubble { position: absolute; width: 15px; height: 15px; background-color: rgba(255, 255, 255, 0.5); border-radius: 50%; animation: bubble-rise 5s linear infinite; pointer-events: none; opacity: 0.7; }
-    @keyframes bubble-rise { 
-      0%   { transform: translateY(0) scale(1); opacity: 0.7; } 
-      50%  { transform: translateY(-150px) scale(1.2); } 
-      100% { transform: translateY(-300px) scale(1); opacity: 0; } 
+    @keyframes bubble-rise {
+      0%   { transform: translateY(0) scale(1); opacity: 0.7; }
+      50%  { transform: translateY(-150px) scale(1.2); }
+      100% { transform: translateY(-300px) scale(1); opacity: 0; }
     }
 
     /* ******************* FLOATING TEXT *********************** */
     .floating-text { position: absolute; color: #fff; font-size: 16px; pointer-events: none; animation: floatUp 2s ease-out forwards; text-shadow: 2px 2px 3px #000; }
-    @keyframes floatUp { 
-      0%   { opacity: 1;   transform: translateY(0); } 
-      100% { opacity: 0;   transform: translateY(-50px); } 
+    @keyframes floatUp {
+      0%   { opacity: 1;   transform: translateY(0); }
+      100% { opacity: 0;   transform: translateY(-50px); }
     }
 
     /* ******************** MODAL STYLES ********************* */
@@ -111,12 +123,16 @@
     .item-row img { width: 80px; height: 64px; }
     .item-row button { padding: 8px 16px; background-color: #1e90ff; color: #fff; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; font-size: 14px; }
     .item-row button:hover { background-color: #3742fa; }
-    .fish-tooltip { font-size: 12px; color: #000; background-color: #ffc; border: 1px solid #999; padding: 6px; border-radius: 5px; position: absolute; z-index: 3000; display: none; pointer-events: none; }
+    .fish-tooltip { font-size: 12px; color: #000; background-color: #ffc; border: 1px solid #999; padding: 6px; border-radius: 5px; position: absolute; z-index: 3000; display: none; pointer-events: auto; /* Make tooltip interactive */ }
+    .fish-tooltip-content { padding: 10px; }
+    .fish-tooltip-actions { margin-top: 10px; text-align: center; }
+    .fish-tooltip-actions button { margin: 0 5px; }
     .color-palette { display: flex; gap: 8px; margin-top: 10px; }
     .color-swatch { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: border-color 0.3s; }
     .color-swatch:hover, .color-swatch.selected { border-color: black; }
-    .food-crate-preview { display: flex; gap: 5px; align-items: center; }
-    .food-crate-preview img { width: 24px; height: 24px; border-radius: 50%; }
+    .egg-crate-preview { display: flex; gap: 5px; align-items: center; }
+    .egg-crate-preview img { width: 32px; height: 32px; border-radius: 0%; }
+    .egg-image { width: 64px; height: 64px; border-radius: 0%; }
 
     /* ************** ACHIEVEMENTS BUTTON BADGE *************** */
     .achievements-button { position: relative; }
@@ -126,10 +142,10 @@
     /* ******************** TOAST MESSAGE ******************* */
     #toast-container { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); z-index: 5000; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
     .toast-message { background-color: rgba(0, 0, 0, 0.8); color: white; padding: 12px 25px; margin-bottom: 12px; border-radius: 7px; font-size: 14px; opacity: 0; animation: slideInFadeOut 3s forwards; }
-    @keyframes slideInFadeOut { 
-      0% { opacity: 0; transform: translateY(-20px); } 
-      10%, 90% { opacity: 1; transform: translateY(0); } 
-      100% { opacity: 0; transform: translateY(-20px); } 
+    @keyframes slideInFadeOut {
+      0% { opacity: 0; transform: translateY(-20px); }
+      10%, 90% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-20px); }
     }
 
     /* ******************** DAILY REWARD ******************** */
@@ -180,7 +196,7 @@
               <ul class="dropdown-menu" aria-labelledby="storeDropdown">
                 <li><span class="dropdown-item store-button">Fish Store</span></li>
                 <li><span class="dropdown-item decorations-button">Decorations</span></li>
-                <li><span class="dropdown-item crates-button">Food Crates</span></li>
+                <li><span class="dropdown-item eggs-button">Eggs</span></li>
               </ul>
             </li>
             <!-- Upgrades Dropdown -->
@@ -218,7 +234,7 @@
       </div>
     </nav>
   </div>
-  
+
   <!-- ================== AQUARIUM ================== -->
   <div id="aquarium"></div>
 
@@ -307,24 +323,17 @@
     </div>
   </div>
 
-  <!-- Food Crates Modal -->
-  <div class="modal-overlay crates-modal">
+  <!-- Eggs Modal -->
+  <div class="modal-overlay eggs-modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Food Crates</h2>
+        <h2>Eggs</h2>
         <span class="close-modal">×</span>
       </div>
-      <div id="crates-items">
-        <p>Use coins to purchase Food Crates for extra food items.</p>
-        <div class="item-row">
-            <div><strong>Basic Food Crate</strong><p>Guaranteed basic food, chance for premium.</p></div>
-            <div><button data-crate-type="basic">Buy (150 Coins)</button></div>
-        </div>
-        <div class="item-row">
-            <div><strong>Premium Food Crate</strong><p>Guaranteed premium food, chance for gold or boost.</p></div>
-            <div><button data-crate-type="premium">Buy (500 Coins)</button></div>
-        </div>
-        <div id="crate-purchase-status"></div>
+      <div id="eggs-items">
+        <p>Use coins to purchase Eggs for new fish!</p>
+        <div id="egg-store-items"></div>
+        <div id="egg-purchase-status"></div>
       </div>
     </div>
   </div>
@@ -333,7 +342,10 @@
   <div id="toast-container"></div>
 
   <!-- Tooltip for fish stats -->
-  <div class="fish-tooltip" id="fish-tooltip"></div>
+  <div class="fish-tooltip" id="fish-tooltip">
+      <div class="fish-tooltip-content"></div>
+      <div class="fish-tooltip-actions"><button class="sell-fish-button">Sell Fish</button></div>
+  </div>
 
   <script>
     $(document).ready(() => {
@@ -349,19 +361,30 @@
       const FOOD_DETECT_RANGE_Y = 30;
       const DAILY_REWARD_COINS = 500;
       const FOOD_COMBO_WINDOW = 2000; // 2 seconds to maintain combo
+      const LEVEL_UP_BASE_XP = 100;
+      const LEVEL_UP_XP_SCALE = 1.5;
 
       // FISH DEFINITIONS
       const fishTypes = [];
       for (let i = 1; i <= 10; i++) {
         fishTypes.push({
           id: i, name: "Fish " + i, cost: 50 * i, baseEarning: i,
-          baseSpeed: 0.8 + i * 0.08, image: `fish_${i}.png`,
+          baseSpeed: 0.8 + i * 0.08, image: `fish_${i}.png`, baseSellValue: (50 * i) / 2,
           upgrades: [
             { id: `speed-${i}`, name: `Speed +1 for Fish ${i}`, description: `Increase speed by 1`, cost: 200 * i, purchasedCount: 0 },
             { id: `earning-${i}`, name: `Earning +1 for Fish ${i}`, description: `Increase earning by 1 coin per food`, cost: 300 * i, purchasedCount: 0 }
           ]
         });
       }
+      const rareFishTypes = [];
+      for (let i = 11; i <= 14; i++) {
+        rareFishTypes.push({
+          id: i, name: "Rare Fish " + i, cost: 100 * i, baseEarning: i * 2,
+          baseSpeed: 1.0 + i * 0.1, image: `fish_${i}.png`, baseSellValue: (100 * i) / 2
+        });
+      }
+      const allFishTypes = [...fishTypes, ...rareFishTypes];
+
 
       // Owned fish array
       let ownedFish = [];
@@ -379,10 +402,10 @@
 
       // GLOBAL UPGRADES - Added food upgrades and auto-collect
       const globalUpgrades = [
-        { id: 1, name: 'Coin Multiplier 1', description: '+25% coins per food.', cost: 500, purchased: false, effect: () => { ownedFish.forEach(f => { f.currentEarning *= 1.25; }); fishTypes.forEach(ft => { ft.baseEarning *= 1.25; }); } },
-        { id: 2, name: 'Speed Booster 1', description: '+20% fish speed.', cost: 750, purchased: false, effect: () => { ownedFish.forEach(f => { f.currentSpeed *= 1.2; }); fishTypes.forEach(ft => { ft.baseSpeed *= 1.2; }); } },
-        { id: 3, name: 'Coin Multiplier 2', description: '+50% coins per food.', cost: 4000, purchased: false, effect: () => { ownedFish.forEach(f => { f.currentEarning *= 1.5; }); fishTypes.forEach(ft => { ft.baseEarning *= 1.5; }); } },
-        { id: 4, name: 'Speed Booster 2', description: '+40% fish speed.', cost: 5000, purchased: false, effect: () => { ownedFish.forEach(f => { f.currentSpeed *= 1.4; }); fishTypes.forEach(ft => { ft.baseSpeed *= 1.4; }); } },
+        { id: 1, name: 'Coin Multiplier 1', description: '+25% coins per food.', cost: 500, purchased: false, effect: () => { ownedFish.forEach(f => { f.currentEarning *= 1.25; }); fishTypes.forEach(ft => { ft.baseEarning *= 1.25; }); rareFishTypes.forEach(ft => { ft.baseEarning *= 1.25; }); } },
+        { id: 2, name: 'Speed Booster 1', description: '+20% fish speed.', cost: 750, purchased: false, effect: () => { ownedFish.forEach(f => { f.currentSpeed *= 1.2; }); fishTypes.forEach(ft => { ft.baseSpeed *= 1.2; }); rareFishTypes.forEach(ft => { ft.baseSpeed *= 1.2; }); } },
+        { id: 3, name: 'Coin Multiplier 2', description: '+50% coins per food.', cost: 4000, purchased: false, effect: () => { ownedFish.forEach(f => { f.currentEarning *= 1.5; }); fishTypes.forEach(ft => { ft.baseEarning *= 1.5; }); rareFishTypes.forEach(ft => { ft.baseEarning *= 1.5; }); } },
+        { id: 4, name: 'Speed Booster 2', description: '+40% fish speed.', cost: 5000, purchased: false, effect: () => { ownedFish.forEach(f => { f.currentSpeed *= 1.4; }); fishTypes.forEach(ft => { ft.baseSpeed *= 1.4; }); rareFishTypes.forEach(ft => { ft.baseSpeed *= 1.4; }); } },
         { id: 5, name: 'Food Value+', description: 'Food is worth +25% coins.', cost: 2500, purchased: false, effect: () => { foodTypes.forEach(ft => { if (ft.type !== 'boost' && ft.type !== 'growth' && ft.type !== 'attract') ft.coinValue *= 1.25; }); } },
         { id: 6, name: 'Boost Food+', description: 'Boost food effect +50% duration.', cost: 6000, purchased: false, effect: () => { const boostFood = foodTypes.find(ft => ft.type === 'boost'); if (boostFood && boostFood.effectDuration) boostFood.effectDuration *= 1.5; } },
         { id: 7, name: 'Growth Food+', description: 'Growth food effect +50% duration.', cost: 7000, purchased: false, effect: () => { const growthFood = foodTypes.find(ft => ft.type === 'growth'); if (growthFood && growthFood.effectDuration) growthFood.effectDuration *= 1.5; } },
@@ -394,7 +417,7 @@
       const expansions = [
         { id: 1, name: 'Turtle', description: '1 coin/s each, +10% synergy/10.', cost: 200, purchasedCount: 0, baseEffect: 1, effectType: 'coins', effectRate: 1, synergy: 0.1 },
         { id: 2, name: 'Crab', description: '5 coin/s each, +15% synergy/5.', cost: 1000, purchasedCount: 0, baseEffect: 5, effectType: 'coins', effectRate: 1, synergy: 0.15 },
-        { id: 3, name: 'Auto Feeder', description: 'Drops extra food (0.2 foods/s).', cost: 500, purchasedCount: 0, baseEffect: 1, effectType: 'food', effectRate: 0.2, synergy: 0 },
+        { id: 3, name: 'Auto Feeder', description: 'Drops extra food (0.1 foods/s).', cost: 500, purchasedCount: 0, baseEffect: 1, effectType: 'food', effectRate: 0.1, synergy: 0 },
         { id: 4, name: 'Seahorse', description: '10 coin/s each, +20% synergy/5.', cost: 5000, purchasedCount: 0, baseEffect: 10, effectType: 'coins', effectRate: 1, synergy: 0.2 },
         { id: 5, name: 'Treasure Chest', description: '50 coin/s each, +10% synergy/chest.', cost: 20000, purchasedCount: 0, baseEffect: 50, effectType: 'coins', effectRate: 1, synergy: 0.10 }
       ];
@@ -433,10 +456,42 @@
         { id: 9, name: 'Decorator', description: 'Place 3 decorations.', achieved: false, condition: () => placedDecorations.filter(dec => dec.type !== 'background').length >= 3 },
         { id: 10, name: 'Color Changer', description: 'Customize fish color.', achieved: false, condition: () => fishColorPalette !== 'default' },
         { id: 11, name: 'Food Variety', description: 'Use 4 different food types.', achieved: false, condition: () => ownedFish.reduce((set, fish) => { foodItems.filter(f => f.targetedByFishId === fish.id).forEach(food => set.add(food.type)); return set; }, new Set()).size >= 4 },
-        { id: 12, name: 'Crate Opener', description: 'Open 3 food crates.', achieved: false, condition: () => crateOpenCount >= 3 },
+        { id: 12, name: 'Crate Opener', description: 'Open 3 eggs.', achieved: false, condition: () => crateOpenCount >= 3 },
         { id: 13, name: 'Background Artist', description: 'Change aquarium background.', achieved: false, condition: () => aquariumBackground !== 'default' },
         { id: 14, name: 'Combo Feeder', description: 'Reach a 3x food combo.', achieved: false, condition: () => maxComboReached >= 3 }
       ];
+
+      // EGG DEFINITIONS
+      const eggTypes = [
+          {
+              type: 'common', name: 'Common Egg', cost: 150, image: 'egg_1.png', description: 'May contain common fish or rarely, uncommon fish.',
+              fishChances: [
+                  { fishIds: fishTypes.slice(0, 5).map(f => f.id), chance: 0.7 }, // Fish 1-5, 70%
+                  { fishIds: fishTypes.slice(5, 10).map(f => f.id), chance: 0.25 }, // Fish 6-10, 25%
+                  { fishIds: rareFishTypes.slice(0, 2).map(f => f.id), chance: 0.05 }  // Rare Fish 11-12, 5%
+              ]
+          },
+          {
+              type: 'rare', name: 'Rare Egg', cost: 500, image: 'egg_2.png', description: 'Higher chance for uncommon fish, chance for rare fish.',
+              fishChances: [
+                  { fishIds: fishTypes.slice(0, 5).map(f => f.id), chance: 0.2 },   // Fish 1-5, 20%
+                  { fishIds: fishTypes.slice(5, 10).map(f => f.id), chance: 0.5 },  // Fish 6-10, 50%
+                  { fishIds: rareFishTypes.slice(0, 2).map(f => f.id), chance: 0.25 }, // Rare Fish 11-12, 25%
+                  { fishIds: rareFishTypes.slice(2, 4).map(f => f.id), chance: 0.05 }  // Rare Fish 13-14, 5%
+              ]
+          },
+          {
+              type: 'legendary', name: 'Legendary Egg', cost: 1500, image: 'egg_3.png', description: 'High chance for rare fish, very rare for legendary fish.',
+              fishChances: [
+                  { fishIds: fishTypes.slice(5, 10).map(f => f.id), chance: 0.1 },   // Fish 6-10, 10%
+                  { fishIds: rareFishTypes.slice(0, 2).map(f => f.id), chance: 0.5 },  // Rare Fish 11-12, 50%
+                  { fishIds: rareFishTypes.slice(2, 4).map(f => f.id), chance: 0.35 }, // Rare Fish 13-14, 35%
+                  // No legendary fish yet, can add later if needed
+                  { fishIds: [], chance: 0.05 } // Placeholder for future legendary fish, 5% (currently no fish)
+              ]
+          }
+      ];
+
 
       let bubbleTimer, saveInterval, expansionsInterval, ambientDriftInterval, foodSpawnInterval, comboTimer;
       let achievementNotifications = 0;
@@ -448,80 +503,86 @@
 
       /* ======== LOADING & SAVING GAME ======== */
       const initializeDefaultData = () => {
-        coins = 0; 
-        fishColorPalette = 'default'; 
-        aquariumBackground = 'default'; 
-        ownedFish = [{ id: 1, x: 100, y: 100, direction: 'right', targetFoodId: null, foodEaten: 0, currentSpeed: fishTypes[0].baseSpeed, currentEarning: fishTypes[0].baseEarning, targetX: 300, targetY: 150 }];
-        globalUpgrades.forEach(u => { u.purchased = false; }); 
-        expansions.forEach(e => { e.purchasedCount = 0; }); 
+        coins = 0;
+        fishColorPalette = 'default';
+        aquariumBackground = 'default';
+        ownedFish = [{ id: 1, x: 100, y: 100, direction: 'right', targetFoodId: null, foodEaten: 0, currentSpeed: fishTypes[0].baseSpeed, currentEarning: fishTypes[0].baseEarning, targetX: 300, targetY: 150, level: 1, experience: 0, baseSpeed: fishTypes[0].baseSpeed, baseEarning: fishTypes[0].baseEarning, baseSellValue: fishTypes[0].baseSellValue }];
+        globalUpgrades.forEach(u => { u.purchased = false; });
+        expansions.forEach(e => { e.purchasedCount = 0; });
         achievements.forEach(a => { a.achieved = false; });
-        fishTypes.forEach(ft => { ft.upgrades.forEach(u => { u.purchasedCount = 0; }); }); 
-        foodItems = []; 
-        placedDecorations = []; 
-        dailyRewardClaimed = false; 
-        lastDailyRewardTime = null; 
-        crateOpenCount = 0; 
+        fishTypes.forEach(ft => { ft.upgrades.forEach(u => { u.purchasedCount = 0; }); });
+        rareFishTypes.forEach(ft => { ft.upgrades = []; }); // Rare fish have no upgrades
+        foodItems = [];
+        placedDecorations = [];
+        dailyRewardClaimed = false;
+        lastDailyRewardTime = null;
+        crateOpenCount = 0;
         maxComboReached = 0;
       };
 
       const loadGame = () => {
-        if (!localStorage.getItem('hasData')) { 
-          initializeDefaultData(); 
-          return; 
+        if (!localStorage.getItem('hasData')) {
+          initializeDefaultData();
+          return;
         }
-        coins = parseFloat(localStorage.getItem('coins') || 0); 
-        fishColorPalette = localStorage.getItem('fishColorPalette') || 'default'; 
+        coins = parseFloat(localStorage.getItem('coins') || 0);
+        fishColorPalette = localStorage.getItem('fishColorPalette') || 'default';
         aquariumBackground = localStorage.getItem('aquariumBackground') || 'default';
         $('#aquarium').removeClass('bg-coral bg-ruins bg-cave').addClass(aquariumBackground);
         ownedFish = JSON.parse(localStorage.getItem('ownedFish') || '[]');
-        ownedFish.forEach(f => { 
-          const ft = fishTypes[f.id - 1]; 
-          if (!ft) return; 
-          const totalSpeedUp = ft.upgrades.find(u => u.id === `speed-${ft.id}`)?.purchasedCount || 0; 
-          const totalEarningUp = ft.upgrades.find(u => u.id === `earning-${ft.id}`)?.purchasedCount || 0; 
-          f.currentSpeed = ft.baseSpeed + totalSpeedUp; 
-          f.currentEarning = ft.baseEarning + totalEarningUp; 
-          if (typeof f.targetX === 'undefined') f.targetX = f.x; 
-          if (typeof f.targetY === 'undefined') f.targetY = f.y; 
+        ownedFish.forEach(f => {
+          const ft = allFishTypes.find(x => x.id === f.id);
+          if (!ft) return;
+          const totalSpeedUp = ft.upgrades?.find(u => u.id === `speed-${ft.id}`)?.purchasedCount || 0;
+          const totalEarningUp = ft.upgrades?.find(u => u.id === `earning-${ft.id}`)?.purchasedCount || 0;
+          f.currentSpeed = ft.baseSpeed + totalSpeedUp;
+          f.currentEarning = ft.baseEarning + totalEarningUp;
+          if (typeof f.targetX === 'undefined') f.targetX = f.x;
+          if (typeof f.targetY === 'undefined') f.targetY = f.y;
+          if (typeof f.level === 'undefined') f.level = 1;
+          if (typeof f.experience === 'undefined') f.experience = 0;
+          f.baseSpeed = ft.baseSpeed; // Ensure base stats are loaded
+          f.baseEarning = ft.baseEarning;
+          f.baseSellValue = ft.baseSellValue;
         });
 
-        if (ownedFish.length === 0) { 
-          const ft = fishTypes[0]; 
-          ownedFish.push({ id: 1, x: 100, y: 100, direction: 'right', targetFoodId: null, foodEaten: 0, currentSpeed: ft.baseSpeed, currentEarning: ft.baseEarning, targetX: 300, targetY: 150 }); 
+        if (ownedFish.length === 0) {
+          const ft = fishTypes[0];
+          ownedFish.push({ id: 1, x: 100, y: 100, direction: 'right', targetFoodId: null, foodEaten: 0, currentSpeed: ft.baseSpeed, currentEarning: ft.baseEarning, targetX: 300, targetY: 150, level: 1, experience: 0, baseSpeed: ft.baseSpeed, baseEarning: ft.baseEarning, baseSellValue: ft.baseSellValue });
         }
 
         const purchasedGlobalUpg = JSON.parse(localStorage.getItem('globalUpgrades') || '[]');
-        purchasedGlobalUpg.forEach(uId => { 
-          const upg = globalUpgrades.find(u => u.id === uId); 
-          if (upg && !upg.purchased) { 
-            upg.purchased = true; 
-            upg.effect(); 
-          } 
+        purchasedGlobalUpg.forEach(uId => {
+          const upg = globalUpgrades.find(u => u.id === uId);
+          if (upg && !upg.purchased) {
+            upg.purchased = true;
+            upg.effect();
+          }
         });
 
         const expansionsData = JSON.parse(localStorage.getItem('expansions') || '[]');
-        expansionsData.forEach(e => { 
-          const ex = expansions.find(x => x.id === e.id); 
-          if (ex) ex.purchasedCount = e.purchasedCount; 
+        expansionsData.forEach(e => {
+          const ex = expansions.find(x => x.id === e.id);
+          if (ex) ex.purchasedCount = e.purchasedCount;
         });
 
         const achievedList = JSON.parse(localStorage.getItem('achievements') || '[]');
-        achievedList.forEach(aId => { 
-          const a = achievements.find(x => x.id === aId); 
-          if (a) a.achieved = true; 
+        achievedList.forEach(aId => {
+          const a = achievements.find(x => x.id === aId);
+          if (a) a.achieved = true;
         });
 
         const fishUpgradesData = JSON.parse(localStorage.getItem('fishUpgrades') || '[]');
-        fishUpgradesData.forEach(fu => { 
-          const ft = fishTypes.find(x => x.id === fu.fishTypeId); 
-          if (ft) { 
-            fu.upgrades.forEach(up => { 
-              const matchUp = ft.upgrades.find(m => m.id === up.id); 
-              if (matchUp) { 
-                matchUp.purchasedCount = up.purchasedCount; 
-              } 
-            }); 
-          } 
+        fishUpgradesData.forEach(fu => {
+          const ft = fishTypes.find(x => x.id === fu.fishTypeId);
+          if (ft) {
+            fu.upgrades.forEach(up => {
+              const matchUp = ft.upgrades.find(m => m.id === up.id);
+              if (matchUp) {
+                matchUp.purchasedCount = up.purchasedCount;
+              }
+            });
+          }
         });
 
         placedDecorations = JSON.parse(localStorage.getItem('placedDecorations') || '[]');
@@ -539,25 +600,25 @@
         });
 
         const savedLastUpdate = localStorage.getItem('lastUpdateTime');
-        if (savedLastUpdate) { 
-          const currentTime = Date.now(); 
+        if (savedLastUpdate) {
+          const currentTime = Date.now();
           const elapsed = (currentTime - parseInt(savedLastUpdate)) / 1000;
-          expansions.forEach(exp => { 
+          expansions.forEach(exp => {
             if (exp.purchasedCount > 0) {
-              if (exp.effectType === 'coins') { 
-                let synergyMult = 1; 
-                if (exp.synergy && exp.synergy > 0) { 
-                  synergyMult += Math.floor(exp.purchasedCount / 10) * exp.synergy; 
-                } 
-                coins += exp.baseEffect * exp.purchasedCount * synergyMult * exp.effectRate * elapsed; 
+              if (exp.effectType === 'coins') {
+                let synergyMult = 1;
+                if (exp.synergy && exp.synergy > 0) {
+                  synergyMult += Math.floor(exp.purchasedCount / 10) * exp.synergy;
+                }
+                coins += exp.baseEffect * exp.purchasedCount * synergyMult * exp.effectRate * elapsed;
               }
-              else if (exp.effectType === 'food') { 
-                const spawnRate = exp.baseEffect * exp.purchasedCount * exp.effectRate; 
-                const totalFoods = Math.floor(spawnRate * elapsed); 
-                for (let i = 0; i < totalFoods; i++) { 
-                  spawnFood(); 
-                } 
-              } 
+              else if (exp.effectType === 'food') {
+                const spawnRate = exp.baseEffect * exp.purchasedCount * exp.effectRate;
+                const totalFoods = Math.floor(spawnRate * elapsed);
+                for (let i = 0; i < totalFoods; i++) {
+                  spawnFood();
+                }
+              }
             }
           });
         }
@@ -565,9 +626,9 @@
       };
 
       const saveGame = () => {
-        localStorage.setItem('coins', coins); 
-        localStorage.setItem('fishColorPalette', fishColorPalette); 
-        localStorage.setItem('aquariumBackground', aquariumBackground); 
+        localStorage.setItem('coins', coins);
+        localStorage.setItem('fishColorPalette', fishColorPalette);
+        localStorage.setItem('aquariumBackground', aquariumBackground);
         localStorage.setItem('ownedFish', JSON.stringify(ownedFish));
         localStorage.setItem('globalUpgrades', JSON.stringify(globalUpgrades.filter(u => u.purchased).map(u => u.id)));
         localStorage.setItem('expansions', JSON.stringify(expansions.map(e => ({ id: e.id, purchasedCount: e.purchasedCount }))));
@@ -579,48 +640,52 @@
         localStorage.setItem('crateOpenCount', crateOpenCount.toString());
         localStorage.setItem('maxComboReached', maxComboReached.toString());
         foodTypes.forEach(ft => { // Save food upgrades
-            if (ft.type === 'basic' || ft.type === 'premium' || ft.type === 'gold') 
+            if (ft.type === 'basic' || ft.type === 'premium' || ft.type === 'gold')
               localStorage.setItem(`foodUpgrade-${ft.type}`, ft.coinValue.toString()); // Save value upgrades
-            if (ft.type === 'boost' || ft.type === 'growth' || ft.type === 'attract') 
+            if (ft.type === 'boost' || ft.type === 'growth' || ft.type === 'attract')
               localStorage.setItem(`foodUpgrade-${ft.type}`, ft.effectDuration.toString()); // Save duration upgrades
         });
-        localStorage.setItem('lastUpdateTime', Date.now()); 
+        localStorage.setItem('lastUpdateTime', Date.now());
         localStorage.setItem('hasData', 'true');
       };
 
       const resetAllData = () => {
-        if (confirm('Are you sure you want to reset ALL progress? This cannot be undone.')) { 
-          localStorage.clear(); 
-          initializeDefaultData(); 
-          renderFish(); 
-          renderFoodItems(); 
-          renderDecorations(); 
-          updateCoinDisplay(); 
-          showToast('Game reset!'); 
+        if (confirm('Are you sure you want to reset ALL progress? This cannot be undone.')) {
+          localStorage.clear();
+          initializeDefaultData();
+          renderFish();
+          renderFoodItems();
+          renderDecorations();
+          updateCoinDisplay();
+          showToast('Game reset!');
         }
       };
 
       /* ======== RENDER UI ======== */
-      const updateCoinDisplay = () => { 
-        $('#coin-count').text(Math.floor(coins)); 
-        checkAchievements(); 
+      const updateCoinDisplay = () => {
+        $('#coin-count').text(Math.floor(coins));
+        checkAchievements();
       };
 
       // ========== STORE UI ==========
-      const showFishTooltip = (evt, fish) => {
-        const tooltip = $('#fish-tooltip'); 
-        let info = `<strong>${fish.name}</strong><br>Cost: ${Math.floor(fish.cost)}<br>Base Speed: ${fish.baseSpeed.toFixed(2)}<br>Base Earning: ${fish.baseEarning.toFixed(2)}<br><em>Upgrades Purchased:</em><br>`;
-        fish.upgrades.forEach(up => { 
-          info += `${up.name}: +${up.purchasedCount}<br>`; 
-        }); 
-        tooltip.html(info); 
+      const showFishTooltip = (evt, fish, fishIndex) => {
+        const tooltip = $('#fish-tooltip');
+        const tooltipContent = tooltip.find('.fish-tooltip-content');
+        let info = `<strong>${fish.name} Lvl. ${ownedFish[fishIndex].level}</strong><br>Level: ${ownedFish[fishIndex].level}<br>Exp: ${Math.floor(ownedFish[fishIndex].experience)}/${getLevelUpXp(ownedFish[fishIndex].level)}<br>Speed: ${(ownedFish[fishIndex].currentSpeed).toFixed(2)}<br>Earning: ${(ownedFish[fishIndex].currentEarning).toFixed(2)} coins<br>Sell Value: ${getFishSellValue(ownedFish[fishIndex])} coins<br><em>Upgrades Purchased:</em><br>`;
+        if (fish.upgrades) {
+          fish.upgrades.forEach(up => {
+            info += `${up.name}: +${up.purchasedCount}<br>`;
+          });
+        }
+        tooltipContent.html(info);
         tooltip.css({ display: 'block', left: evt.pageX + 10 + 'px', top: evt.pageY + 'px' });
+        tooltip.data('fish-index', fishIndex); // Store fish index for selling
       };
       const hideFishTooltip = () => { $('#fish-tooltip').hide(); };
 
       const renderStore = () => {
-        $('#store-items').empty(); 
-        fishTypes.forEach(f => { 
+        $('#store-items').empty();
+        fishTypes.forEach(f => {
           const ownedCount = ownedFish.filter(x => x.id === f.id).length;
           const row = $(`
             <div class="item-row fish-store-item" data-fid="${f.id}">
@@ -633,15 +698,52 @@
               </div>
             </div>
           `);
-          $('#store-items').append(row); 
+          $('#store-items').append(row);
         });
       };
 
+      // ========== EGGS UI ==========
+      const renderEggsStore = () => {
+        $('#egg-store-items').empty();
+        eggTypes.forEach(egg => {
+            const eggItem = $(`
+                <div class="item-row">
+                    <div class="egg-crate-preview">
+                        <img src="${egg.image}" alt="${egg.name}" class="egg-image">
+                        <div>
+                            <strong>${egg.name}</strong>
+                            <p>${egg.description}</p>
+                            <ul></ul>
+                        </div>
+                    </div>
+                    <div>
+                        <button data-egg-type="${egg.type}">Buy (${Math.floor(egg.cost)} Coins)</button>
+                    </div>
+                </div>
+            `);
+            const chanceList = eggItem.find('ul');
+            egg.fishChances.forEach(chanceGroup => {
+                let fishNames = [];
+                chanceGroup.fishIds.forEach(fishId => {
+                    const fish = allFishTypes.find(f => f.id === fishId);
+                    if (fish) fishNames.push(fish.name);
+                });
+                if (fishNames.length > 0) {
+                    chanceList.append(`<li>${(chanceGroup.chance * 100).toFixed(1)}% chance for: ${fishNames.join(', ')}</li>`);
+                } else {
+                    chanceList.append(`<li>${(chanceGroup.chance * 100).toFixed(1)}% chance for: Rare Fish</li>`); // For placeholders
+                }
+            });
+            $('#egg-store-items').append(eggItem);
+        });
+      };
+
+
       // ========== GLOBAL UPGRADES UI ==========
       const renderGlobalUpgrades = () => {
-        $('#upgrade-items').empty(); 
-        globalUpgrades.forEach(u => { 
-          const btnText = u.purchased ? 'Purchased' : `Buy (${Math.floor(u.cost)} coins)`; 
+        $('#upgrade-items').empty();
+        globalUpgrades.forEach(u => {
+          const btnText = u.purchased ? 'Purchased' : `Buy (${Math.floor(u.cost)} coins)`;
           const disabled = u.purchased ? 'disabled' : '';
           const row = $(`
             <div class="item-row">
@@ -653,8 +755,8 @@
                 <button data-id="${u.id}" ${disabled}>${btnText}</button>
               </div>
             </div>
-          `); 
-          $('#upgrade-items').append(row); 
+          `);
+          $('#upgrade-items').append(row);
         });
 
         // Food Upgrades Section
@@ -678,8 +780,8 @@
 
       // ========== EXPANSIONS UI ==========
       const renderExpansions = () => {
-        $('#expansion-items').empty(); 
-        expansions.forEach(e => { 
+        $('#expansion-items').empty();
+        expansions.forEach(e => {
           const row = $(`
             <div class="item-row">
               <div>
@@ -691,14 +793,14 @@
                 <button data-id="${e.id}">Buy (${Math.floor(e.cost)} coins)</button>
               </div>
             </div>
-          `); 
-          $('#expansion-items').append(row); 
+          `);
+          $('#expansion-items').append(row);
         });
       };
 
       // ========== DECORATIONS UI ==========
       const renderDecorationsStore = () => {
-        $('#decoration-items').empty(); 
+        $('#decoration-items').empty();
         decorations.forEach(dec => {
             const thumbnail = dec.thumbClass ? `${dec.thumbClass}.png` : `${dec.type}_1.png`;
             const row = $(`
@@ -711,40 +813,40 @@
                   <button data-decoration-id="${dec.id}">Buy (${Math.floor(dec.cost)} coins)</button>
                 </div>
               </div>
-            `); 
+            `);
             $('#decoration-items').append(row);
         });
       };
 
       // ========== CUSTOMIZE UI ==========
       const renderCustomizeOptions = () => {
-        const paletteContainer = $('#customize-items').find('#color-palettes'); 
+        const paletteContainer = $('#customize-items').find('#color-palettes');
         paletteContainer.empty();
-        Object.keys(colorPalettes).forEach(paletteName => { 
+        Object.keys(colorPalettes).forEach(paletteName => {
           const paletteDiv = $(`
             <div>
               <strong>${paletteName.toUpperCase()}</strong>
               <div class="color-palette" data-palette="${paletteName}"></div>
             </div>
-          `); 
-          paletteContainer.append(paletteDiv); 
-          const colors = colorPalettes[paletteName]; 
+          `);
+          paletteContainer.append(paletteDiv);
+          const colors = colorPalettes[paletteName];
           const colorPaletteDiv = paletteDiv.find('.color-palette');
-          colors.forEach(color => { 
-            const swatch = $('<div class="color-swatch"></div>'); 
-            swatch.css('background-color', color); 
-            colorPaletteDiv.append(swatch); 
+          colors.forEach(color => {
+            const swatch = $('<div class="color-swatch"></div>');
+            swatch.css('background-color', color);
+            colorPaletteDiv.append(swatch);
           });
-          const defaultSwatch = $('<div class="color-swatch"></div>'); 
-          colorPaletteDiv.prepend(defaultSwatch); 
+          const defaultSwatch = $('<div class="color-swatch"></div>');
+          colorPaletteDiv.prepend(defaultSwatch);
           if (paletteName === 'default') defaultSwatch.addClass('selected');
         });
       };
 
       // ========== ACHIEVEMENTS UI ==========
       const renderAchievements = () => {
-        $('#achievement-items').empty(); 
-        achievements.forEach(a => { 
+        $('#achievement-items').empty();
+        achievements.forEach(a => {
           const status = a.achieved ? '<span class="badge bg-success">Achieved</span>' : '<span class="badge bg-secondary">Locked</span>';
           const row = $(`
             <div class="item-row">
@@ -754,80 +856,90 @@
               </div>
               <div>${status}</div>
             </div>
-          `); 
-          $('#achievement-items').append(row); 
+          `);
+          $('#achievement-items').append(row);
         });
       };
 
       // ========== DAILY REWARD UI ==========
       const updateDailyRewardUI = () => {
-        const rewardButton = $('.daily-reward-button'); 
-        const claimButton = $('#claim-daily-reward'); 
+        const rewardButton = $('.daily-reward-button');
+        const claimButton = $('#claim-daily-reward');
         const statusDisplay = $('#daily-reward-status');
-        if (dailyRewardClaimed) { 
-          rewardButton.addClass('claimed'); 
-          claimButton.prop('disabled', true); 
-          statusDisplay.text('Reward claimed today!'); 
+        if (dailyRewardClaimed) {
+          rewardButton.addClass('claimed');
+          claimButton.prop('disabled', true);
+          statusDisplay.text('Reward claimed today!');
         }
-        else { 
-          rewardButton.removeClass('claimed'); 
-          claimButton.prop('disabled', false); 
-          statusDisplay.text(''); 
+        else {
+          rewardButton.removeClass('claimed');
+          claimButton.prop('disabled', false);
+          statusDisplay.text('');
         }
       };
 
       const checkDailyRewardAvailability = () => {
-        if (!lastDailyRewardTime) { 
-          dailyRewardClaimed = false; 
-          updateDailyRewardUI(); 
-          return; 
+        if (!lastDailyRewardTime) {
+          dailyRewardClaimed = false;
+          updateDailyRewardUI();
+          return;
         }
-        const lastClaimDate = new Date(parseInt(lastDailyRewardTime)); 
+        const lastClaimDate = new Date(parseInt(lastDailyRewardTime));
         const today = new Date();
-        if (lastClaimDate.toDateString() === today.toDateString()) { 
-          dailyRewardClaimed = true; 
-        } else { 
-          dailyRewardClaimed = false; 
-        } 
+        if (lastClaimDate.toDateString() === today.toDateString()) {
+          dailyRewardClaimed = true;
+        } else {
+          dailyRewardClaimed = false;
+        }
         updateDailyRewardUI();
       };
 
-      // ========== FOOD CRATES UI ==========
-      const showCratePurchaseStatus = (message) => {
-          $('#crate-purchase-status').text(message).fadeIn().delay(3000).fadeOut();
+
+      // ========== EGG CRATES UI ==========
+      const showEggPurchaseStatus = (message) => {
+          $('#egg-purchase-status').text(message).fadeIn().delay(3000).fadeOut();
       };
 
       /* ======== FISH & FOOD RENDERING/LOGIC ======== */
       const renderFish = () => {
-        $('#aquarium .fish').remove(); 
-        ownedFish.forEach((f, index) => { 
-          const ft = fishTypes[f.id - 1];
-          const fishDiv = $(`<div class="fish" data-index="${index}"></div>`); 
-          fishDiv.css({ 
-            left: f.x + 'px', 
-            top: f.y + 'px', 
-            backgroundImage: `url(${ft.image})`, 
-            transform: f.direction === 'left' ? 'scaleX(-1)' : 'scaleX(1)', 
-            filter: colorPalettes[fishColorPalette].join(' ') 
+        $('#aquarium .fish').remove();
+        ownedFish.forEach((f, index) => {
+          const ft = allFishTypes.find(type => type.id === f.id);
+          const fishDiv = $(`<div class="fish" data-index="${index}"></div>`);
+          fishDiv.css({
+            left: f.x + 'px',
+            top: f.y + 'px',
+            backgroundImage: `url(${ft.image})`,
+            transform: f.direction === 'left' ? 'scaleX(-1)' : 'scaleX(1)',
+            filter: colorPalettes[fishColorPalette].join(' ')
           });
-          $('#aquarium').append(fishDiv); 
+          $('#aquarium').append(fishDiv);
+           if (f.levelingUp) {
+              fishDiv.addClass('level-up-shimmer');
+              fishDiv.append(`<div class="level-up-text">Level Up! Lvl. ${f.level}</div>`);
+              setTimeout(() => {
+                  fishDiv.removeClass('level-up-shimmer');
+                  fishDiv.find('.level-up-text').remove();
+                  f.levelingUp = false; // Reset leveling up flag
+              }, 2000); // Duration matches CSS animation
+          }
         });
       };
 
       const renderFoodItems = () => {
-        $('#aquarium .food').remove(); 
-        foodItems.forEach(food => { 
-          const fd = $('<div class="food"></div>'); 
-          fd.attr('data-id', food.id).addClass(food.effect === 'speedBoost' ? 'food-boost' : (food.effect === 'growthBoost' ? 'food-growth' : (food.effect === 'attractFish' ? 'food-attract' : ''))); 
-          fd.css({ 
-            left: food.x + 'px', 
-            top: food.y + 'px', 
-            backgroundColor: food.color 
+        $('#aquarium .food').remove();
+        foodItems.forEach(food => {
+          const fd = $('<div class="food"></div>');
+          fd.attr('data-id', food.id).addClass(food.effect === 'speedBoost' ? 'food-boost' : (food.effect === 'growthBoost' ? 'food-growth' : (food.effect === 'attractFish' ? 'food-attract' : '')));
+          fd.css({
+            left: food.x + 'px',
+            top: food.y + 'px',
+            backgroundColor: food.color
           });
-          if (food.effect) { 
-            fd.append(`<div class="food-effect-text">${food.effect.replace('Boost', '+Speed').replace('Fish', '')}</div>`); 
-          } 
-          $('#aquarium').append(fd); 
+          if (food.effect) {
+            fd.append(`<div class="food-effect-text">${food.effect.replace('Boost', '+Speed').replace('Fish', '')}</div>`);
+          }
+          $('#aquarium').append(fd);
         });
       };
 
@@ -837,112 +949,119 @@
             if (dec.type === 'background') {
                 $('#aquarium').removeClass('bg-coral bg-ruins bg-cave').addClass(dec.bgClass);
             } else {
-                const decDiv = $(`<div class="decoration ${dec.type}"></div>`); 
-                decDiv.css({ left: dec.x + 'px', top: dec.y + 'px' }); 
+                const decDiv = $(`<div class="decoration ${dec.type}"></div>`);
+                decDiv.css({ left: dec.x + 'px', top: dec.y + 'px' });
                 $('#aquarium').append(decDiv);
             }
         });
       };
 
       function isOverlap(el1, el2) {
-        const rect1 = el1.offset(); 
-        rect1.right = rect1.left + el1.outerWidth(true); 
+        const rect1 = el1.offset();
+        rect1.right = rect1.left + el1.outerWidth(true);
         rect1.bottom = rect1.top + el1.outerHeight(true);
-        const rect2 = el2.offset(); 
-        rect2.right = rect2.left + el2.outerWidth(true); 
+        const rect2 = el2.offset();
+        rect2.right = rect2.left + el2.outerWidth(true);
         rect2.bottom = rect2.top + el2.outerHeight(true);
         return !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom);
       }
 
       function assignCoinsToFish() {
-        ownedFish.forEach(f => { f.targetFoodId = null; }); 
+        ownedFish.forEach(f => { f.targetFoodId = null; });
         let pairs = [];
-        ownedFish.forEach(fish => { 
-          foodItems.forEach(coin => { 
+        ownedFish.forEach(fish => {
+          foodItems.forEach(coin => {
             if (coin.dropComplete && Math.abs(coin.y - coin.finalY) <= FOOD_DETECT_RANGE_Y) {
-              const dx = coin.x - fish.x; 
-              const dy = coin.y - fish.y; 
-              const dist = Math.hypot(dx, dy); 
-              pairs.push({ fish, coin, dist }); 
-            } 
-          }); 
+              const dx = coin.x - fish.x;
+              const dy = coin.y - fish.y;
+              const dist = Math.hypot(dx, dy);
+              pairs.push({ fish, coin, dist });
+            }
+          });
         });
-        pairs.sort((a, b) => a.dist - b.dist); 
-        const assignedFish = new Set(); 
+        pairs.sort((a, b) => a.dist - b.dist);
+        const assignedFish = new Set();
         const assignedCoins = new Set();
-        pairs.forEach(pair => { 
+        pairs.forEach(pair => {
           if (!assignedFish.has(pair.fish) && !assignedCoins.has(pair.coin.id)) {
-            pair.fish.targetFoodId = pair.coin.id; 
-            pair.fish.targetX = pair.coin.x; 
-            pair.fish.targetY = pair.coin.y; 
-            assignedFish.add(pair.fish); 
-            assignedCoins.add(pair.coin.id); 
-          } 
+            pair.fish.targetFoodId = pair.coin.id;
+            pair.fish.targetX = pair.coin.x;
+            pair.fish.targetY = pair.coin.y;
+            assignedFish.add(pair.fish);
+            assignedCoins.add(pair.coin.id);
+          }
         });
       }
 
       const moveFish = (dt) => {
-        assignCoinsToFish(); 
-        ownedFish.forEach((fish, index) => { 
+        assignCoinsToFish();
+        ownedFish.forEach((fish, index) => {
           const targetFood = foodItems.find(fd => fd.id === fish.targetFoodId);
           const fishDiv = $(`.fish[data-index="${index}"]`);
-          if (targetFood) { 
-            const foodDiv = $(`.food[data-id="${targetFood.id}"]`); 
+          if (targetFood) {
+            const foodDiv = $(`.food[data-id="${targetFood.id}"]`);
             if (isOverlap(fishDiv, foodDiv)) {
-              const earning = fish.currentEarning || 1; 
-              let totalCoins = earning * targetFood.coinValue * comboMultiplier; 
-              coins += totalCoins; 
+              const earning = fish.currentEarning || 1;
+              let totalCoins = earning * targetFood.coinValue * comboMultiplier;
+              coins += totalCoins;
               updateCoinDisplay();
-              fish.foodEaten++; 
-              createFloatingText(targetFood.x, targetFood.y, `+${Math.floor(totalCoins)}`); 
+              fish.foodEaten++;
+              createFloatingText(targetFood.x, targetFood.y, `+${Math.floor(totalCoins)}`);
+
+              // Leveling system
+              const xpGain = targetFood.coinValue; // Experience gained is based on food value
+              fish.experience += xpGain;
+              checkLevelUp(fish);
+
+
               foodItems = foodItems.filter(fd => fd.id !== targetFood.id);
-              fish.targetFoodId = null; 
-              setRandomDriftTarget(fish); 
-              lastFoodDropTime = 0; 
-              comboMultiplier = 1; 
+              fish.targetFoodId = null;
+              setRandomDriftTarget(fish);
+              lastFoodDropTime = 0;
+              comboMultiplier = 1;
               clearTimeout(comboTimer);
 
-              // Apply food effect
-              if (targetFood.effect === 'speedBoost') { 
-                applySpeedBoost(fish, targetFood.effectDuration); 
+              // Apply food effect (no notifications for boosts now)
+              if (targetFood.effect === 'speedBoost') {
+                applySpeedBoost(fish, targetFood.effectDuration);
               }
-              else if (targetFood.effect === 'growthBoost') { 
-                applyGrowthBoost(fish, targetFood.effectDuration); 
-              } 
-              return; 
+              else if (targetFood.effect === 'growthBoost') {
+                applyGrowthBoost(fish, targetFood.effectDuration);
+              }
+              return;
             }
-            const dx = targetFood.x - fish.x; 
-            const dy = targetFood.y - fish.y; 
-            const dist = Math.hypot(dx, dy); 
+            const dx = targetFood.x - fish.x;
+            const dy = targetFood.y - fish.y;
+            const dist = Math.hypot(dx, dy);
             fish.direction = dx < 0 ? 'left' : 'right';
-            const speed = fish.currentSpeed || 1.0; 
-            const moveX = (dx / dist) * speed; 
-            const moveY = (dy / dist) * speed; 
-            fish.x += moveX; 
+            const speed = fish.currentSpeed || 1.0;
+            const moveX = (dx / dist) * speed;
+            const moveY = (dy / dist) * speed;
+            fish.x += moveX;
             fish.y += moveY;
-          } else { 
-            if (fish.targetFoodId === null) { 
-              const dxDrift = fish.targetX - fish.x; 
-              const dyDrift = fish.targetY - fish.y; 
+          } else {
+            if (fish.targetFoodId === null) {
+              const dxDrift = fish.targetX - fish.x;
+              const dyDrift = fish.targetY - fish.y;
               const distDrift = Math.hypot(dxDrift, dyDrift);
-              if (distDrift > 1) { 
-                fish.direction = dxDrift < 0 ? 'left' : 'right'; 
-                const driftSpeed = 0.2; 
-                fish.x += (dxDrift / distDrift) * driftSpeed; 
-                fish.y += (dyDrift / distDrift) * driftSpeed; 
-              } 
-            } 
+              if (distDrift > 1) {
+                fish.direction = dxDrift < 0 ? 'left' : 'right';
+                const driftSpeed = 0.2;
+                fish.x += (dxDrift / distDrift) * driftSpeed;
+                fish.y += (dyDrift / distDrift) * driftSpeed;
+              }
+            }
           }
-          const fishW = 96; 
-          const fishH = 64; 
-          const winW = $(window).width(); 
+          const fishW = 96;
+          const fishH = 64;
+          const winW = $(window).width();
           const winH = $(window).height();
-          fish.x = Math.max(0, Math.min(winW - fishW, fish.x)); 
+          fish.x = Math.max(0, Math.min(winW - fishW, fish.x));
           fish.y = Math.max(0, Math.min(winH - fishH, fish.y));
-          fishDiv.css({ 
-            left: fish.x + 'px', 
-            top: fish.y + 'px', 
-            transform: fish.direction === 'left' ? 'scaleX(-1)' : 'scaleX(1)' 
+          fishDiv.css({
+            left: fish.x + 'px',
+            top: fish.y + 'px',
+            transform: fish.direction === 'left' ? 'scaleX(-1)' : 'scaleX(1)'
           });
         });
 
@@ -957,64 +1076,85 @@
         });
       };
 
+      // Fish Level Up Logic
+      function getLevelUpXp(level) {
+          return LEVEL_UP_BASE_XP * Math.pow(LEVEL_UP_XP_SCALE, level - 1);
+      }
+
+      function checkLevelUp(fish) {
+          const xpNeeded = getLevelUpXp(fish.level);
+          if (fish.experience >= xpNeeded) {
+              fish.level++;
+              fish.experience = 0; // Reset experience after level up
+              fish.currentSpeed = fish.baseSpeed * (1 + (fish.level - 1) * 0.05); // Example: +5% speed per level
+              fish.currentEarning = fish.baseEarning * (1 + (fish.level - 1) * 0.05); // Example: +5% earning per level
+              fish.levelingUp = true; // Set flag to trigger visual effect
+              renderFish(); // Re-render to show level up effect
+          }
+      }
+
+      // Get Fish Sell Value based on level
+      function getFishSellValue(fish) {
+          return Math.floor(fish.baseSellValue * (1 + (fish.level - 1) * 0.1)); // Example: +10% sell value per level
+      }
+
+
       // Apply speed boost effect to fish
       function applySpeedBoost(fish, duration) {
-        fish.currentSpeed *= 2; 
-        showToast(`${fishTypes[fish.id-1].name} speed boosted!`);
-        setTimeout(() => { 
-          fish.currentSpeed /= 2; 
+        fish.currentSpeed *= 1.5; // Reduced boost amount
+        setTimeout(() => {
+          fish.currentSpeed /= 1.5; // Revert to normal speed
         }, duration * 1000);
       }
 
       // Apply growth boost effect to fish
       function applyGrowthBoost(fish, duration) {
-        fish.currentEarning *= 1.5; 
-        showToast(`${fishTypes[fish.id-1].name} earning boosted!`); 
-        setTimeout(() => { 
-          fish.currentEarning /= 1.5; 
+        fish.currentEarning *= 1.3; // Reduced boost amount
+        setTimeout(() => {
+          fish.currentEarning /= 1.3; // Revert to normal earning
         }, duration * 1000);
       }
 
       function setRandomDriftTarget(fish) {
-        const winW = $(window).width(); 
-        const winH = $(window).height(); 
-        const fishW = 96; 
+        const winW = $(window).width();
+        const winH = $(window).height();
+        const fishW = 96;
         const fishH = 64;
-        fish.targetX = Math.random() * (winW - fishW - COIN_SPAWN_MARGIN * 2) + COIN_SPAWN_MARGIN; 
+        fish.targetX = Math.random() * (winW - fishW - COIN_SPAWN_MARGIN * 2) + COIN_SPAWN_MARGIN;
         fish.targetY = Math.random() * (winH - fishH - COIN_SPAWN_MARGIN * 2) + COIN_SPAWN_MARGIN;
       }
 
       /* FOOD DROPPING */
       const spawnFood = () => {
-        const pick = Math.random(); 
+        const pick = Math.random();
         let chosen;
-        if (pick < 0.5) chosen = foodTypes[0]; // Basic
-        else if (pick < 0.75) chosen = foodTypes[1]; // Premium
-        else if (pick < 0.85) chosen = foodTypes[2]; // Gold
-        else if (pick < 0.93) chosen = foodTypes[3]; // Boost food
-        else if (pick < 0.97) chosen = foodTypes[4]; // Growth food
-        else chosen = foodTypes[5];                  // Attract food (rarest)
+        if (pick < 0.6) chosen = foodTypes[0]; // Basic - increased chance
+        else if (pick < 0.85) chosen = foodTypes[1]; // Premium - increased chance
+        else if (pick < 0.95) chosen = foodTypes[2]; // Gold - increased chance
+        else if (pick < 0.97) chosen = foodTypes[3]; // Boost food - reduced chance
+        else if (pick < 0.99) chosen = foodTypes[4]; // Growth food - reduced chance
+        else chosen = foodTypes[5];                  // Attract food (rarest) - reduced chance
 
-        const winW = $(window).width(); 
-        const winH = $(window).height(); 
+        const winW = $(window).width();
+        const winH = $(window).height();
         const spawnX = Math.random() * (winW - COIN_SPAWN_MARGIN * 2) + COIN_SPAWN_MARGIN;
-        const minFinalY = Math.max(winH * 0.4, COIN_SPAWN_MARGIN); 
-        const maxFinalY = Math.min(winH * 0.8, winH - COIN_SPAWN_MARGIN); 
+        const minFinalY = Math.max(winH * 0.4, COIN_SPAWN_MARGIN);
+        const maxFinalY = Math.min(winH * 0.8, winH - COIN_SPAWN_MARGIN);
         const chosenFinalY = Math.random() * (maxFinalY - minFinalY) + minFinalY;
-        const fObj = { 
-          id: Date.now() + Math.random(), 
-          x: spawnX, 
-          y: COIN_SPAWN_MARGIN / 2, 
-          finalY: chosenFinalY, 
-          dropComplete: false, 
-          hoverPhase: 0, 
-          coinValue: chosen.coinValue, 
-          color: chosen.color, 
-          targetedByFishId: null, 
-          effect: chosen.effect, 
-          effectDuration: chosen.effectDuration, 
-          type: chosen.type 
-        }; 
+        const fObj = {
+          id: Date.now() + Math.random(),
+          x: spawnX,
+          y: COIN_SPAWN_MARGIN / 2,
+          finalY: chosenFinalY,
+          dropComplete: false,
+          hoverPhase: 0,
+          coinValue: chosen.coinValue,
+          color: chosen.color,
+          targetedByFishId: null,
+          effect: chosen.effect,
+          effectDuration: chosen.effectDuration,
+          type: chosen.type
+        };
         foodItems.push(fObj);
 
         // Combo system check on food drop
@@ -1026,29 +1166,29 @@
             clearTimeout(comboTimer); // Reset timer on each drop in combo window
         }
         lastFoodDropTime = currentTime;
-        comboTimer = setTimeout(() => { 
-          comboMultiplier = 1; 
+        comboTimer = setTimeout(() => {
+          comboMultiplier = 1;
         }, FOOD_COMBO_WINDOW + 1000); // slightly longer than window to reset after
       };
 
       const moveFood = () => {
-        foodItems.forEach(food => { 
-          if (!food.dropComplete) { 
-            const dropSpeed = 1.5; 
-            if (food.y < food.finalY) { 
-              food.y += dropSpeed; 
-              if (food.y >= food.finalY) { 
-                food.y = food.finalY; 
-                food.dropComplete = true; 
-              } 
-            } 
+        foodItems.forEach(food => {
+          if (!food.dropComplete) {
+            const dropSpeed = 1.5;
+            if (food.y < food.finalY) {
+              food.y += dropSpeed;
+              if (food.y >= food.finalY) {
+                food.y = food.finalY;
+                food.dropComplete = true;
+              }
+            }
           }
-          else { 
-            food.hoverPhase += 0.04; 
-            const amplitude = 5; 
-            const offsetY = amplitude * Math.sin(food.hoverPhase); 
-            food.y = food.finalY + offsetY; 
-          } 
+          else {
+            food.hoverPhase += 0.04;
+            const amplitude = 5;
+            const offsetY = amplitude * Math.sin(food.hoverPhase);
+            food.y = food.finalY + offsetY;
+          }
         });
 
         // Auto-collect coins from missed food if upgrade purchased
@@ -1066,76 +1206,76 @@
       };
 
       const createFloatingText = (x, y, text) => {
-        const ft = $(`<div class="floating-text">${text}</div>`); 
-        ft.css({ left: x + 'px', top: y + 'px' }); 
-        $('#aquarium').append(ft); 
-        setTimeout(() => { 
-          ft.remove(); 
+        const ft = $(`<div class="floating-text">${text}</div>`);
+        ft.css({ left: x + 'px', top: y + 'px' });
+        $('#aquarium').append(ft);
+        setTimeout(() => {
+          ft.remove();
         }, 2000);
       };
 
       /* ======== EXPANSIONS ======== */
       const runExpansions = () => {
-        expansions.forEach(exp => { 
+        expansions.forEach(exp => {
           if (exp.purchasedCount > 0) {
-            if (exp.effectType === 'coins') { 
-              let synergyMult = 1; 
-              if (exp.synergy && exp.synergy > 0) { 
-                synergyMult += Math.floor(exp.purchasedCount / 10) * exp.synergy; 
-              } 
-              coins += exp.baseEffect * exp.purchasedCount * synergyMult * exp.effectRate; 
+            if (exp.effectType === 'coins') {
+              let synergyMult = 1;
+              if (exp.synergy && exp.synergy > 0) {
+                synergyMult += Math.floor(exp.purchasedCount / 10) * exp.synergy;
+              }
+              coins += exp.baseEffect * exp.purchasedCount * synergyMult * exp.effectRate;
             }
-            else if (exp.effectType === 'food') { 
-              let spawnRate = exp.baseEffect * exp.purchasedCount * exp.effectRate; 
-              const integerSpawn = Math.floor(spawnRate); 
-              for (let i = 0; i < integerSpawn; i++) { 
-                spawnFood(); 
-              } 
-            } 
-          } 
+            else if (exp.effectType === 'food') {
+              let spawnRate = exp.baseEffect * exp.purchasedCount * exp.effectRate;
+              const integerSpawn = Math.floor(spawnRate);
+              for (let i = 0; i < integerSpawn; i++) {
+                spawnFood();
+              }
+            }
+          }
         });
         updateCoinDisplay();
       };
 
       /* ======== ACHIEVEMENTS ======== */
       const checkAchievements = () => {
-        achievements.forEach(a => { 
-          if (!a.achieved && a.condition()) { 
-            a.achieved = true; 
-            achievementNotifications++; 
-            showToast(`Achievement Unlocked: ${a.name}`); 
-          } 
+        achievements.forEach(a => {
+          if (!a.achieved && a.condition()) {
+            a.achieved = true;
+            achievementNotifications++;
+            showToast(`Achievement Unlocked: ${a.name}`);
+          }
         });
-        if (achievementNotifications > 0) { 
-          $('.achievements-button').addClass('has-new-achievements'); 
-          $('.achievements-button').attr('data-badge', achievementNotifications); 
+        if (achievementNotifications > 0) {
+          $('.achievements-button').addClass('has-new-achievements');
+          $('.achievements-button').attr('data-badge', achievementNotifications);
         }
       };
 
       // Toast message function
-      let toastCounter = 0; 
+      let toastCounter = 0;
       const showToast = (message) => {
-        const toastId = `toast-${toastCounter++}`; 
-        const toast = $(`<div class="toast-message" id="${toastId}">${message}</div>`); 
-        $('#toast-container').append(toast); 
-        setTimeout(() => { 
-          $(`#${toastId}`).remove(); 
+        const toastId = `toast-${toastCounter++}`;
+        const toast = $(`<div class="toast-message" id="${toastId}">${message}</div>`);
+        $('#toast-container').append(toast);
+        setTimeout(() => {
+          $(`#${toastId}`).remove();
         }, 3000);
       };
 
       /* ======== BUBBLES ======== */
       const spawnBubble = () => {
-        const bubble = $('<div class="bubble"></div>'); 
-        const startX = Math.random() * ($(window).width() - 15); 
-        bubble.css({ left: startX + 'px', bottom: '0px' }); 
-        $('#aquarium').append(bubble); 
-        setTimeout(() => { 
-          bubble.remove(); 
+        const bubble = $('<div class="bubble"></div>');
+        const startX = Math.random() * ($(window).width() - 15);
+        bubble.css({ left: startX + 'px', bottom: '0px' });
+        $('#aquarium').append(bubble);
+        setTimeout(() => {
+          bubble.remove();
         }, 5000);
       };
 
       /* ======== EVENT HANDLERS ======== */
-      const openModal = sel => { $(sel).fadeIn(); }; 
+      const openModal = sel => { $(sel).fadeIn(); };
       const closeModal = sel => { $(sel).fadeOut(); };
 
       $('.nav-link, .dropdown-item').click(function(e) {
@@ -1146,296 +1286,321 @@
         else if (action === 'Decorations') { renderDecorationsStore(); openModal('.decorations-modal'); }
         else if (action === 'Customize') { renderCustomizeOptions(); openModal('.customize-modal'); }
         else if (action === 'Achievements') { renderAchievements(); openModal('.achievements-modal'); achievementNotifications = 0; $('.achievements-button').removeClass('has-new-achievements'); $('.achievements-button').attr('data-badge', 0); }
-        else if (action === 'Food Crates') { openModal('.crates-modal'); }
+        else if (action === 'Eggs') { renderEggsStore(); openModal('.eggs-modal'); }
         else if (action === 'Reset All') { resetAllData(); }
         e.stopPropagation();
       });
 
       $('.close-modal').click(function() { closeModal($(this).closest('.modal-overlay')); });
 
-      $(document).on('click', function(event) { 
-        if (!$(event.target).closest('.modal-content').length && $('.modal-overlay:visible').length) { 
-          $('.modal-overlay:visible').fadeOut(); 
-        } 
+      $(document).on('click', function(event) {
+        if (!$(event.target).closest('.modal-content').length && $('.modal-overlay:visible').length) {
+          $('.modal-overlay:visible').fadeOut();
+        }
+        if (!$(event.target).closest('.fish-tooltip').length) {
+            hideFishTooltip(); // Hide tooltip when clicking outside
+        }
       });
 
       // Hover tooltip for fish stats
-      $('#store-items').on('mouseenter', '.fish-store-item', function(e) { 
-        const fid = parseInt($(this).data('fid')); 
-        const fish = fishTypes.find(x => x.id === fid); 
-        showFishTooltip(e, fish); 
-      }).on('mousemove', '.fish-store-item', function(e) { 
-        const fid = parseInt($(this).data('fid')); 
-        const fish = fishTypes.find(x => x.id === fid); 
-        showFishTooltip(e, fish); 
-      }).on('mouseleave', '.fish-store-item', function() { 
-        hideFishTooltip(); 
+      $('#aquarium').on('mouseenter', '.fish', function(e) {
+        const fishIndex = parseInt($(this).data('index'));
+        const fish = allFishTypes.find(type => type.id === ownedFish[fishIndex].id);
+        showFishTooltip(e, fish, fishIndex);
+      }).on('mouseleave', '.fish', function() {
+        hideFishTooltip();
       });
 
       // Store -> Buy Fish
-      $('#store-items').on('click', 'button', function() { 
-        const fishId = parseInt($(this).data('id')); 
-        const ft = fishTypes.find(f => f.id === fishId); 
+      $('#store-items').on('click', 'button', function() {
+        const fishId = parseInt($(this).data('id'));
+        const ft = fishTypes.find(f => f.id === fishId);
         if (!ft) return;
-        if (coins >= ft.cost) { 
-          coins -= ft.cost; 
-          updateCoinDisplay(); 
-          const totalSpeedUp = ft.upgrades.find(u => u.id === `speed-${ft.id}`)?.purchasedCount || 0; 
+        if (coins >= ft.cost) {
+          coins -= ft.cost;
+          updateCoinDisplay();
+          const totalSpeedUp = ft.upgrades.find(u => u.id === `speed-${ft.id}`)?.purchasedCount || 0;
           const totalEarningUp = ft.upgrades.find(u => u.id === `earning-${ft.id}`)?.purchasedCount || 0;
-          const newFish = { 
-            id: ft.id, 
-            x: Math.random() * ($(window).width() - 96), 
-            y: Math.random() * ($(window).height() - 64), 
-            direction: 'right', 
-            targetFoodId: null, 
-            foodEaten: 0, 
-            currentSpeed: ft.baseSpeed + totalSpeedUp, 
-            currentEarning: ft.baseEarning + totalEarningUp, 
-            targetX:  Math.random() * ($(window).width() - 96), 
-            targetY: Math.random() * ($(window).height() - 64) 
+          const newFish = {
+            id: ft.id,
+            x: Math.random() * ($(window).width() - 96),
+            y: Math.random() * ($(window).height() - 64),
+            direction: 'right',
+            targetFoodId: null,
+            foodEaten: 0,
+            currentSpeed: ft.baseSpeed + totalSpeedUp,
+            currentEarning: ft.baseEarning + totalEarningUp,
+            targetX:  Math.random() * ($(window).width() - 96),
+            targetY: Math.random() * ($(window).height() - 64),
+            level: 1,
+            experience: 0,
+            baseSpeed: ft.baseSpeed,
+            baseEarning: ft.baseEarning,
+            baseSellValue: ft.baseSellValue
           };
-          ownedFish.push(newFish); 
-          renderFish(); 
-          checkAchievements(); 
-        } else { 
-          showToast('Not enough coins!'); 
-        } 
+          ownedFish.push(newFish);
+          renderFish();
+          checkAchievements();
+        } else {
+          showToast('Not enough coins!');
+        }
       });
 
       // Buy Global Upgrades
-      $('#upgrade-items').on('click', 'button', function() { 
-        const upgId = parseInt($(this).data('id')); 
-        const upg = globalUpgrades.find(u => u.id === upgId); 
+      $('#upgrade-items').on('click', 'button', function() {
+        const upgId = parseInt($(this).data('id'));
+        const upg = globalUpgrades.find(u => u.id === upgId);
         if (!upg || upg.purchased) return;
-        if (coins >= upg.cost) { 
-          coins -= upg.cost; 
-          upg.purchased = true; 
-          upg.effect(); 
-          updateCoinDisplay(); 
-          renderGlobalUpgrades(); 
-          showToast(`Upgrade Purchased: ${upg.name}`); 
-        } else { 
-          showToast('Not enough coins!'); 
-        } 
+        if (coins >= upg.cost) {
+          coins -= upg.cost;
+          upg.purchased = true;
+          upg.effect();
+          updateCoinDisplay();
+          renderGlobalUpgrades();
+          showToast(`Upgrade Purchased: ${upg.name}`);
+        } else {
+          showToast('Not enough coins!');
+        }
       });
 
       // Upgrade Food Value/Effect
       $('#upgrade-items').on('click', 'button[data-food-upgrade]', function() {
-          const foodType = $(this).data('food-upgrade'); 
-          const food = foodTypes.find(f => f.type === foodType); 
+          const foodType = $(this).data('food-upgrade');
+          const food = foodTypes.find(f => f.type === foodType);
           if (!food) return;
-          if (coins >= food.upgradeCost) { 
-              coins -= food.upgradeCost; 
+          if (coins >= food.upgradeCost) {
+              coins -= food.upgradeCost;
               updateCoinDisplay();
-              if (food.type === 'basic' || food.type === 'premium' || food.type === 'gold') 
+              if (food.type === 'basic' || food.type === 'premium' || food.type === 'gold')
                 food.coinValue += food.upgradeIncrement; // Increase value
-              if (food.effectDuration) 
+              if (food.effectDuration)
                 food.effectDuration += food.upgradeIncrement; // Increase duration
-              renderGlobalUpgrades(); 
-              showToast(`${food.type.charAt(0).toUpperCase() + food.type.slice(1)} Food Upgraded!`); 
-              saveGame(); 
-          } else { 
-            showToast('Not enough coins!'); 
+              renderGlobalUpgrades();
+              showToast(`${food.type.charAt(0).toUpperCase() + food.type.slice(1)} Food Upgraded!`);
+              saveGame();
+          } else {
+            showToast('Not enough coins!');
           }
       });
 
       // Buy Expansions
-      $('#expansion-items').on('click', 'button', function() { 
-        const expId = parseInt($(this).data('id')); 
-        const ex = expansions.find(e => e.id === expId); 
+      $('#expansion-items').on('click', 'button', function() {
+        const expId = parseInt($(this).data('id'));
+        const ex = expansions.find(e => e.id === expId);
         if (!ex) return;
-        if (coins >= ex.cost) { 
-          coins -= ex.cost; 
-          ex.purchasedCount++; 
-          updateCoinDisplay(); 
-          renderExpansions(); 
-          checkAchievements(); 
-          showToast(`Expansion Purchased: ${ex.name}`); 
-        } else { 
-          showToast('Not enough coins!'); 
-        } 
+        if (coins >= ex.cost) {
+          coins -= ex.cost;
+          ex.purchasedCount++;
+          updateCoinDisplay();
+          renderExpansions();
+          checkAchievements();
+          showToast(`Expansion Purchased: ${ex.name}`);
+        } else {
+          showToast('Not enough coins!');
+        }
       });
 
       // Buy Decorations
-      $('#decoration-items').on('click', 'button', function() { 
-        const decId = parseInt($(this).data('decoration-id')); 
-        const dec = decorations.find(d => d.id === decId); 
+      $('#decoration-items').on('click', 'button', function() {
+        const decId = parseInt($(this).data('decoration-id'));
+        const dec = decorations.find(d => d.id === decId);
         if (!dec) return;
-        if (coins >= dec.cost) { 
-          coins -= dec.cost; 
-          updateCoinDisplay(); 
-          openModal('.decorations-modal'); 
+        if (coins >= dec.cost) {
+          coins -= dec.cost;
+          updateCoinDisplay();
+          openModal('.decorations-modal');
           showToast(`${dec.name} purchased! Click in aquarium to place.`);
-          $('#aquarium').one('click', function(e) { 
-            const aquariumOffset = $('#aquarium').offset(); 
-            const placeX = e.pageX - aquariumOffset.left - (dec.type === 'background' ? 0 : 32); 
-            const placeY = e.pageY - aquariumOffset.top - (dec.type === 'background' ? 0 : 32); 
-            placedDecorations.push({ 
-              type: dec.type, 
-              x: placeX, 
-              y: placeY, 
-              bgClass: dec.bgClass 
-            }); 
-            renderDecorations(); 
-            checkAchievements(); 
-            $('#aquarium').off('click'); 
+          $('#aquarium').one('click', function(e) {
+            const aquariumOffset = $('#aquarium').offset();
+            const placeX = e.pageX - aquariumOffset.left - (dec.type === 'background' ? 0 : 32);
+            const placeY = e.pageY - aquariumOffset.top - (dec.type === 'background' ? 0 : 32);
+            placedDecorations.push({
+              type: dec.type,
+              x: placeX,
+              y: placeY,
+              bgClass: dec.bgClass
+            });
+            renderDecorations();
+            checkAchievements();
+            $('#aquarium').off('click');
           });
-        } else { 
-          showToast('Not enough coins!'); 
-        } 
+        } else {
+          showToast('Not enough coins!');
+        }
       });
 
       // Customize Fish Color Palette
-      $('#customize-items').on('click', '.color-swatch', function() { 
-        $('.color-swatch').removeClass('selected'); 
-        $(this).addClass('selected'); 
-        const paletteName = $(this).parent('.color-palette').data('palette'); 
-        fishColorPalette = paletteName; 
-        renderFish(); 
-        checkAchievements(); 
-        showToast(`Color palette changed to ${paletteName.toUpperCase()}!`); 
+      $('#customize-items').on('click', '.color-swatch', function() {
+        $('.color-swatch').removeClass('selected');
+        $(this).addClass('selected');
+        const paletteName = $(this).parent('.color-palette').data('palette');
+        fishColorPalette = paletteName;
+        renderFish();
+        checkAchievements();
+        showToast(`Color palette changed to ${paletteName.toUpperCase()}!`);
       });
 
       // Claim Daily Reward
-      $('#claim-daily-reward').click(() => { 
-        if (!dailyRewardClaimed) { 
-          coins += DAILY_REWARD_COINS; 
-          dailyRewardClaimed = true; 
-          lastDailyRewardTime = Date.now().toString(); 
-          saveGame(); 
-          updateCoinDisplay(); 
-          updateDailyRewardUI(); 
-          showToast(`Daily reward claimed: ${DAILY_REWARD_COINS} coins!`); 
-        } 
+      $('#claim-daily-reward').click(() => {
+        if (!dailyRewardClaimed) {
+          coins += DAILY_REWARD_COINS;
+          dailyRewardClaimed = true;
+          lastDailyRewardTime = Date.now().toString();
+          saveGame();
+          updateCoinDisplay();
+          updateDailyRewardUI();
+          showToast(`Daily reward claimed: ${DAILY_REWARD_COINS} coins!`);
+        }
       });
 
-      // Buy Food Crates
-      $('#crates-items').on('click', 'button', function() {
-          const crateType = $(this).data('crate-type'); 
-          let crateCost, foodRewardTypes;
+      // Buy Eggs
+      $('#egg-store-items').on('click', 'button', function() {
+          const eggType = $(this).data('egg-type');
+          const eggData = eggTypes.find(e => e.type === eggType);
+          if (!eggData) return;
 
-          if (crateType === 'basic') { 
-            crateCost = 150; 
-            foodRewardTypes = ['basic', 'premium']; 
-          }
-          else if (crateType === 'premium') { 
-            crateCost = 500; 
-            foodRewardTypes = ['premium', 'gold', 'boost']; 
-          }
-
-          if (coins >= crateCost) {
-              coins -= crateCost; 
-              updateCoinDisplay(); 
-              crateOpenCount++; 
-              checkAchievements(); 
+          if (coins >= eggData.cost) {
+              coins -= eggData.cost;
+              updateCoinDisplay();
+              crateOpenCount++; // egg is crate counter
+              checkAchievements();
               saveGame();
 
-              let foodTypeAwarded;
-              if (crateType === 'basic') 
-                foodTypeAwarded = foodRewardTypes[Math.floor(Math.random() * foodRewardTypes.length)]; // Random basic/premium
-              else 
-                foodTypeAwarded = foodRewardTypes[Math.floor(Math.random() * foodRewardTypes.length)]; // Random premium/gold/boost
+              const roll = Math.random();
+              let fishAwardedId = null;
+              let cumulativeChance = 0;
 
-              spawnCrateFood(foodTypeAwarded); // Spawn food from crate
-              showCratePurchaseStatus(`Crate opened! Awarded ${foodTypeAwarded} food.`);
-          } else { 
-            showCratePurchaseStatus('Not enough coins!'); 
+              for (const chanceGroup of eggData.fishChances) {
+                  cumulativeChance += chanceGroup.chance;
+                  if (roll < cumulativeChance) {
+                      if (chanceGroup.fishIds.length > 0) {
+                          fishAwardedId = chanceGroup.fishIds[Math.floor(Math.random() * chanceGroup.fishIds.length)];
+                      } else {
+                          // Award a rare fish if no specific fish IDs (placeholder for future legendary)
+                          const rareFish = rareFishTypes[Math.floor(Math.random() * rareFishTypes.length)];
+                          fishAwardedId = rareFish?.id || fishTypes[0].id; // Fallback to basic fish if no rare fish
+                      }
+                      break;
+                  }
+              }
+              if (fishAwardedId) {
+                  spawnFishFromEgg(fishAwardedId);
+                  const awardedFishName = allFishTypes.find(f => f.id === fishAwardedId)?.name || 'Unknown Fish';
+                  showEggPurchaseStatus(`Egg opened! Awarded ${awardedFishName}.`);
+              } else {
+                  showEggPurchaseStatus('Egg opened, but no fish awarded.'); // Should not happen, but for safety
+              }
+          } else {
+              showEggPurchaseStatus('Not enough coins!');
           }
       });
 
-      // Function to spawn food from crates
-      function spawnCrateFood(foodTypeAwarded) {
-          const chosenFood = foodTypes.find(f => f.type === foodTypeAwarded);
-          if (!chosenFood) return;
-
-          const winW = $(window).width(); 
-          const winH = $(window).height(); 
-          const spawnX = Math.random() * (winW - COIN_SPAWN_MARGIN * 2) + COIN_SPAWN_MARGIN;
-          const minFinalY = Math.max(winH * 0.4, COIN_SPAWN_MARGIN); 
-          const maxFinalY = Math.min(winH * 0.8, winH - COIN_SPAWN_MARGIN); 
-          const chosenFinalY = Math.random() * (maxFinalY - minFinalY) + minFinalY;
-          const fObj = { 
-            id: Date.now() + Math.random(), 
-            x: spawnX, 
-            y: COIN_SPAWN_MARGIN / 2, 
-            finalY: chosenFinalY, 
-            dropComplete: false, 
-            hoverPhase: 0, 
-            coinValue: chosenFood.coinValue, 
-            color: chosenFood.color, 
-            targetedByFishId: null, 
-            effect: chosenFood.effect, 
-            effectDuration: chosenFood.effectDuration, 
-            type: chosenFood.type 
+      // Function to spawn fish from eggs
+      function spawnFishFromEgg(fishId) {
+          const ft = allFishTypes.find(f => f.id === fishId);
+          if (!ft) return;
+          const newFish = {
+              id: ft.id,
+              x: Math.random() * ($(window).width() - 96),
+              y: Math.random() * ($(window).height() - 64),
+              direction: 'right',
+              targetFoodId: null,
+              foodEaten: 0,
+              currentSpeed: ft.baseSpeed,
+              currentEarning: ft.baseEarning,
+              targetX:  Math.random() * ($(window).width() - 96),
+              targetY: Math.random() * ($(window).height() - 64),
+              level: 1,
+              experience: 0,
+              baseSpeed: ft.baseSpeed,
+              baseEarning: ft.baseEarning,
+              baseSellValue: ft.baseSellValue
           };
-          foodItems.push(fObj);
+          ownedFish.push(newFish);
+          renderFish();
       }
 
+      // Sell Fish Functionality
+      $('#fish-tooltip').on('click', '.sell-fish-button', function() {
+          const fishIndex = $('#fish-tooltip').data('fish-index');
+          if (fishIndex !== undefined) {
+              const fishToSell = ownedFish[fishIndex];
+              const sellValue = getFishSellValue(fishToSell);
+              coins += sellValue;
+              updateCoinDisplay();
+              ownedFish.splice(fishIndex, 1); // Remove fish from array
+              renderFish();
+              hideFishTooltip();
+              showToast(`Sold fish for ${sellValue} coins!`);
+          }
+      });
+
+
       // Spacebar -> Drop manual basic food
-      $(document).keydown(e => { 
-        if (e.code === 'Space') { 
-          e.preventDefault(); 
-          spawnManualFood(); 
-        } 
-      }); 
-      const spawnManualFood = () => { 
-        const chosen = foodTypes[0]; 
-        const spawnX = Math.random() * ($(window).width() - COIN_SPAWN_MARGIN * 2) + COIN_SPAWN_MARGIN; 
-        const winH = $(window).height(); 
-        const minFinalY = Math.max(winH * 0.4, COIN_SPAWN_MARGIN); 
-        const maxFinalY = Math.min(winH * 0.8, winH - COIN_SPAWN_MARGIN); 
-        const chosenFinalY = Math.random() * (maxFinalY - minFinalY) + minFinalY; 
-        const fObj = { 
-          id: Date.now() + Math.random(), 
-          x: spawnX, 
-          y: COIN_SPAWN_MARGIN / 2, 
-          finalY: chosenFinalY, 
-          dropComplete: false, 
-          hoverPhase: 0, 
-          coinValue: chosen.coinValue, 
-          color: chosen.color, 
-          targetedByFishId: null, 
-          effect: chosen.effect, 
-          effectDuration: chosen.effectDuration, 
-          type: chosen.type 
-        }; 
-        foodItems.push(fObj); 
+      $(document).keydown(e => {
+        if (e.code === 'Space') {
+          e.preventDefault();
+          spawnManualFood();
+        }
+      });
+      const spawnManualFood = () => {
+        const chosen = foodTypes[0];
+        const spawnX = Math.random() * ($(window).width() - COIN_SPAWN_MARGIN * 2) + COIN_SPAWN_MARGIN;
+        const winH = $(window).height();
+        const minFinalY = Math.max(winH * 0.4, COIN_SPAWN_MARGIN);
+        const maxFinalY = Math.min(winH * 0.8, winH - COIN_SPAWN_MARGIN);
+        const chosenFinalY = Math.random() * (maxFinalY - minFinalY) + minFinalY;
+        const fObj = {
+          id: Date.now() + Math.random(),
+          x: spawnX,
+          y: COIN_SPAWN_MARGIN / 2,
+          finalY: chosenFinalY,
+          dropComplete: false,
+          hoverPhase: 0,
+          coinValue: chosen.coinValue,
+          color: chosen.color,
+          targetedByFishId: null,
+          effect: chosen.effect,
+          effectDuration: chosen.effectDuration,
+          type: chosen.type
+        };
+        foodItems.push(fObj);
       };
 
       /* ======== MAIN GAME LOOP ======== */
-      let lastFrameTime = performance.now(); 
-      const gameLoop = (now) => { 
-        const dt = (now - lastFrameTime) / 1000; 
-        lastFrameTime = now; 
-        moveFish(dt); 
-        moveFood(); 
-        renderFoodItems(); 
-        renderFish(); 
-        requestAnimationFrame(gameLoop); 
+      let lastFrameTime = performance.now();
+      const gameLoop = (now) => {
+        const dt = (now - lastFrameTime) / 1000;
+        lastFrameTime = now;
+        moveFish(dt);
+        moveFood();
+        renderFoodItems();
+        renderFish();
+        requestAnimationFrame(gameLoop);
       };
 
       /* ======== INIT & START ======== */
-      loadGame(); 
-      renderFish(); 
-      renderFoodItems(); 
-      renderDecorations(); 
-      updateCoinDisplay(); 
-      ownedFish.forEach(fish => setRandomDriftTarget(fish)); 
-      checkDailyRewardAvailability(); 
+      loadGame();
+      renderFish();
+      renderFoodItems();
+      renderDecorations();
+      updateCoinDisplay();
+      ownedFish.forEach(fish => setRandomDriftTarget(fish));
+      checkDailyRewardAvailability();
       updateDailyRewardUI();
-      requestAnimationFrame((t) => { 
-        lastFrameTime = t; 
-        gameLoop(t); 
-      }); 
-      foodSpawnInterval = setInterval(spawnFood, 4000); 
-      expansionsInterval = setInterval(runExpansions, 1000); 
-      bubbleTimer = setInterval(spawnBubble, 2000); 
-      saveInterval = setInterval(saveGame, 15000); 
-      ambientDriftInterval = setInterval(() => { 
-        ownedFish.forEach(fish => setRandomDriftTarget(fish)); 
+      requestAnimationFrame((t) => {
+        lastFrameTime = t;
+        gameLoop(t);
+      });
+      foodSpawnInterval = setInterval(spawnFood, 4000);
+      expansionsInterval = setInterval(runExpansions, 1000);
+      bubbleTimer = setInterval(spawnBubble, 2000);
+      saveInterval = setInterval(saveGame, 15000);
+      ambientDriftInterval = setInterval(() => {
+        ownedFish.forEach(fish => setRandomDriftTarget(fish));
       }, 5000);
-      $(window).on('beforeunload', () => { 
-        saveGame(); 
+      $(window).on('beforeunload', () => {
+        saveGame();
       });
     });
   </script>
