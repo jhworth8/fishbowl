@@ -500,6 +500,74 @@ const analytics = getAnalytics(app);
         font-size: 20px;
       }
     }
+    /* ******************** FISH REVEAL MODAL ************************** */
+    .fish-reveal-modal {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  position: fixed; /* Ensure the modal overlay covers the entire screen */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.fish-reveal-content {
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px; /* Increased max-width for better visibility */
+  height: auto; /* Allow height to adjust based on content */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: revealModal 0.5s ease-out;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+
+.fish-reveal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fish-image-container {
+  width: 150px;
+  height: 100px;
+  perspective: 1000px;
+  margin-bottom: 15px;
+}
+
+.fish-reveal-image {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: spinImage 2s linear infinite;
+}
+
+@keyframes spinImage {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+
+.fish-info .fish-name {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.fish-info .fish-type {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Optional: Adjust z-index to ensure modal is on top */
+.modal-overlay {
+  z-index: 3000;
+}
+
   </style>
 </head>
 
@@ -521,13 +589,18 @@ const analytics = getAnalytics(app);
       
         <div class="collapse navbar-collapse" id="navbarMenu">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <!-- Fish Shop Tab -->
+            <li class="nav-item">
+              <span class="nav-link fish-shop-button">Fish Shop</span>
+            </li>
+            
             <!-- Store Dropdown -->
             <li class="nav-item dropdown">
               <span class="nav-link dropdown-toggle" id="storeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Store
               </span>
               <ul class="dropdown-menu" aria-labelledby="storeDropdown">
-                <li><span class="dropdown-item store-button">Fish Store</span></li>
+                <!-- Removed Fish Store from here -->
                 <li><span class="dropdown-item decorations-button">Decorations</span></li>
                 <li><span class="dropdown-item eggs-button">Eggs</span></li>
                 <li><span class="dropdown-item breeding-button">Breeding</span></li>
@@ -666,6 +739,34 @@ const analytics = getAnalytics(app);
       </div>
     </div>
   </div>
+<!-- Fish Reveal Modal -->
+<div class="modal-overlay fish-reveal-modal">
+  <div class="modal-content fish-reveal-content">
+    <div class="modal-header">
+      <h2>New Fish!</h2>
+
+    </div>
+    <div class="fish-reveal-body">
+      <div class="fish-image-container">
+        <img src="" alt="Fish Image" class="fish-reveal-image">
+      </div>
+      <div class="fish-info">
+        <h3 class="fish-name"></h3>
+        <p class="fish-type"></p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Fish Shop Modal -->
+<div class="modal-overlay fish-shop-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Fish Shop</h2>
+      <span class="close-modal">×</span>
+    </div>
+    <div id="fish-shop-items"></div>
+  </div>
+</div>
 
   <!-- Toast Message Container -->
   <div id="toast-container"></div>
@@ -713,6 +814,28 @@ const analytics = getAnalytics(app);
     // Each fish gets a random name from the following list:
     const allPossibleNames = "John, Mary, James, Sarah, Robert, Jennifer, Michael, Emily, William, Jessica, David, Ashley, Christopher, Elizabeth, Joseph, Megan, Matthew, Amanda, Kevin, Brittany, Ryan, Stephanie, Tyler, Kayla, Justin, Lauren, Andrew, Nicole, Brandon, Heather, Joshua, Melissa, Patrick, Angela, Brian, Christina, Kyle, Rebecca, Eric, Tiffany, Jacob, Michelle, Adam, Amber, Zachary, Chelsea, Cody, Danielle, Alexander, Kaitlyn, Hunter, Morgan, Chad, Destiny, River, Skylar, Phoenix, Rain, Stormy, Jett, Indigo, Wren, Bear, Fox, Wolf, Tiger, Ziggy, Zowie, Rainbow, Sunshine, Twinkle, Sparkle, Hashtag";
     const fishNamePool = allPossibleNames.split(",").map(n => n.trim());
+    const renderFishShop = () => {
+  $("#fish-shop-items").empty();
+  allFishTypes.forEach(f => {
+    // Count how many of this fish type is owned
+    const countOwnedForThisType = ownedFish.filter(x => x.id === f.id).length;
+    // Get cost with repeated purchase factor
+    const scaledCost = getScaledFishCost(f.id, countOwnedForThisType);
+
+    const row = $(`
+      <div class="item-row fish-shop-item" data-fid="${f.id}">
+        <div style="position: relative;">
+          <img src="${f.image}" alt="${f.name}">
+          <span>${f.name} (Owned: ${countOwnedForThisType})</span>
+        </div>
+        <div>
+          <button data-id="${f.id}">Buy (${scaledCost} coins)</button>
+        </div>
+      </div>
+    `);
+    $("#fish-shop-items").append(row);
+  });
+};
 
     function getRandomName() {
       return fishNamePool[Math.floor(Math.random() * fishNamePool.length)];
@@ -1355,6 +1478,61 @@ const analytics = getAnalytics(app);
         }
       }
     ];
+// Fish Shop -> Buy Fish
+$("#fish-shop-items").on("click", "button", function() {
+  const fishId = parseInt($(this).data("id"));
+  const ft = allFishTypes.find(f => f.id === fishId);
+  if (!ft) return;
+
+  // how many of this fish we already own:
+  const countOwnedForThisType = ownedFish.filter(x => x.id === ft.id).length;
+  const scaledCost = getScaledFishCost(fishId, countOwnedForThisType);
+
+  if (coins >= scaledCost) {
+    coins -= scaledCost;
+    updateCoinDisplay();
+
+    // apply upgrades
+    const totalSpeedUp = (ft.upgrades || []).find(u => u.id === `speed-${ft.id}`)?.purchasedCount || 0;
+    const totalEarningUp = (ft.upgrades || []).find(u => u.id === `earning-${ft.id}`)?.purchasedCount || 0;
+
+    const newFish = {
+      id: ft.id,
+      name: ft.name,
+      x: Math.random() * ($(window).width() - 96),
+      y: Math.random() * ($(window).height() - 64),
+      direction: "right",
+      targetFoodId: null,
+      foodEaten: 0,
+      currentSpeed: ft.baseSpeed + totalSpeedUp,
+      currentEarning: ft.baseEarning + totalEarningUp,
+      targetX: Math.random() * ($(window).width() - 96),
+      targetY: Math.random() * ($(window).height() - 64),
+      level: 1,
+      experience: 0,
+      baseSpeed: ft.baseSpeed,
+      baseEarning: ft.baseEarning,
+      baseSellValue: ft.baseSellValue,
+      fishName: getRandomName(),
+      purchasePrice: scaledCost,
+      image: getRandomFishImage(ft.id) // Assign a random variant
+    };
+
+    ownedFish.push(newFish);
+    // Re-render fish shop so "Owned: x" updates
+    renderFishShop();
+    renderFish();
+    checkAchievements();
+
+    // Show a toast: "Fish bought!!" with that fish's image
+    showToast("Fish bought!!", ft.image);
+
+    // Show Fish Reveal Modal
+    showFishRevealModal(newFish);
+  } else {
+    showToast("Not enough coins!");
+  }
+});
 
     function runRandomEvents() {
       randomEventsList.forEach(evt => {
@@ -1750,7 +1928,29 @@ $('#aquarium').on('click', function(e) {
         $("#fish-skilltree-items").append(fishBlock);
       });
     };
+    $(document).on("click", function(event) {
+    // If the click is on a modal-overlay
+    if ($(event.target).hasClass("modal-overlay")) {
+      // Specifically check if it's the Fish Reveal Modal
+      if ($(event.target).hasClass("fish-reveal-modal")) {
+        // Close the Fish Reveal Modal
+        $(event.target).fadeOut();
+      } else {
+        // Close other modals as usual
+        $(".modal-overlay:visible").not(".fish-reveal-modal").fadeOut();
+      }
+    }
 
+    // Hide fish tooltip if clicking outside
+    if (!$(event.target).closest(".fish-tooltip").length) {
+      hideFishTooltip();
+    }
+  });
+
+  // Prevent clicks inside the Fish Reveal Modal content from closing it
+  $(".fish-reveal-content").on("click", function(event) {
+    event.stopPropagation(); // Prevent the click from bubbling up to the modal-overlay
+  });
     // ========== EXPANSIONS UI ==========
     const renderExpansions = () => {
       $("#expansion-items").empty();
@@ -1793,32 +1993,35 @@ $('#aquarium').on('click', function(e) {
 
     // ========== SELL UI ==========
     // We'll show a list of owned fish, how much purchased for, how much can be sold for, with a Sell button.
-    const renderSellFishList = () => {
-      $("#sell-fish-list").empty();
-      if (ownedFish.length === 0) {
-        $("#sell-fish-list").append(`<p>No fish to sell.</p>`);
-        return;
-      }
-      ownedFish.forEach((f, idx) => {
-        // For clarity: the fish's "purchasePrice" was what you paid for it, but
-        // the game also calculates a dynamic "getFishSellValue" based on level, etc.
-        const currentSellValue = getFishSellValue(f);
-        const row = $(`
-          <div class="item-row">
-            <div style="display:flex; flex-direction: column;">
-              <strong>${f.fishName}</strong>
-              <p>Type: ${f.name}</p>
-              <p>Purchased for: ${f.purchasePrice || "?"} coins</p>
-              <p>Current Sell Value: ${Math.floor(currentSellValue)} coins</p>
-            </div>
-            <div>
-              <button data-fish-index="${idx}" class="sell-fish-direct-btn">Sell</button>
-            </div>
+// ========== SELL UI ==========
+const renderSellFishList = () => {
+  $("#sell-fish-list").empty();
+  if (ownedFish.length === 0) {
+    $("#sell-fish-list").append(`<p>No fish to sell.</p>`);
+    return;
+  }
+  ownedFish.forEach((f, idx) => {
+    const currentSellValue = getFishSellValue(f);
+    const row = $(`
+      <div class="item-row">
+        <div style="display:flex; align-items: center;">
+          <img src="${f.image}" alt="${f.fishName}" style="width: 64px; height: 64px; margin-right: 10px;">
+          <div style="display: flex; flex-direction: column;">
+            <strong>${f.fishName}</strong>
+            <p>Type: ${f.name}</p>
+            <p>Purchased for: ${f.purchasePrice || "?"} coins</p>
+            <p>Current Sell Value: ${Math.floor(currentSellValue)} coins</p>
           </div>
-        `);
-        $("#sell-fish-list").append(row);
-      });
-    };
+        </div>
+        <div>
+          <button data-fish-index="${idx}" class="sell-fish-direct-btn">Sell</button>
+        </div>
+      </div>
+    `);
+    $("#sell-fish-list").append(row);
+  });
+};
+
 
     // ========== ACHIEVEMENTS UI ==========
     const renderAchievements = () => {
@@ -2318,18 +2521,21 @@ $('#aquarium').on('click', function(e) {
       openModal(".sell-modal");
     });
 
-    $(".close-modal").click(function() {
-      closeModal($(this).closest(".modal-overlay"));
-    });
+// Modified global click handler to exclude Fish Reveal Modal
+$(document).on("click", function(event) {
+  // Check if the click is outside any modal-content
+  if (!$(event.target).closest(".modal-content").length) {
+    // Close all visible modals except Fish Reveal Modal
+    $(".modal-overlay:visible").not(".fish-reveal-modal").fadeOut();
+  }
 
-    $(document).on("click", function(event) {
-      if (!$(event.target).closest(".modal-content").length && $(".modal-overlay:visible").length) {
-        $(".modal-overlay:visible").fadeOut();
-      }
-      if (!$(event.target).closest(".fish-tooltip").length) {
-        hideFishTooltip();
-      }
-    });
+  // Hide fish tooltip if clicking outside
+  if (!$(event.target).closest(".fish-tooltip").length) {
+    hideFishTooltip();
+  }
+});
+
+
 
 // Mobile Tap-to-Show Tooltip
 $("#aquarium").on("click", ".fish", function(e) {
@@ -2372,297 +2578,138 @@ $(document).on("click", function(event) {
     };
     const hideFishTooltip = () => { $("#fish-tooltip").hide(); };
 
-    // Store -> Buy Fish
-    $("#store-items").on("click", "button", function() {
-      const fishId = parseInt($(this).data("id"));
-      const ft = allFishTypes.find(f => f.id === fishId);
-      if (!ft) return;
 
-      // how many of this fish we already own:
-      const countOwnedForThisType = ownedFish.filter(x => x.id === ft.id).length;
-      const scaledCost = getScaledFishCost(fishId, countOwnedForThisType);
+// Function to show Fish Reveal Modal
+function showFishRevealModal(fish) {
+  $(".fish-reveal-image").attr("src", fish.image);
+  $(".fish-name").text(fish.fishName);
+  $(".fish-type").text(fish.name);
+  $(".fish-reveal-modal").fadeIn();
+  
+  // Removed auto-hide to keep the modal open until user closes it
+  /*
+  setTimeout(() => {
+    $(".fish-reveal-modal").fadeOut();
+  }, 4000);
+  */
+}
 
-      if (coins >= scaledCost) {
-        coins -= scaledCost;
-        updateCoinDisplay();
 
-        // apply upgrades
-        const totalSpeedUp = (ft.upgrades || []).find(u => u.id === `speed-${ft.id}`)?.purchasedCount || 0;
-        const totalEarningUp = (ft.upgrades || []).find(u => u.id === `earning-${ft.id}`)?.purchasedCount || 0;
-
-        const newFish = {
-  id: ft.id,
-  name: ft.name,
-  x: Math.random() * ($(window).width() - 96),
-  y: Math.random() * ($(window).height() - 64),
-  direction: "right",
-  targetFoodId: null,
-  foodEaten: 0,
-  currentSpeed: ft.baseSpeed + totalSpeedUp,
-  currentEarning: ft.baseEarning + totalEarningUp,
-  targetX: Math.random() * ($(window).width() - 96),
-  targetY: Math.random() * ($(window).height() - 64),
-  level: 1,
-  experience: 0,
-  baseSpeed: ft.baseSpeed,
-  baseEarning: ft.baseEarning,
-  baseSellValue: ft.baseSellValue,
-  fishName: getRandomName(),
-  purchasePrice: scaledCost,
-  image: getRandomFishImage(ft.id) // Assign a random variant
-};
-
-        ownedFish.push(newFish);
-        // Re-render store so "Owned: x" updates
-        renderStore();
-        renderFish();
-        checkAchievements();
-
-        // Show a toast: "Fish bought!!" with that fish's image
-        showToast("Fish bought!!", ft.image);
-      } else {
-        showToast("Not enough coins!");
-      }
-    });
-
-    // Direct Sell button in Sell Modal
-    $("#sell-fish-list").on("click", ".sell-fish-direct-btn", function() {
-      const fishIndex = parseInt($(this).data("fish-index"));
-      if (!isNaN(fishIndex)) {
-        const fishToSell = ownedFish[fishIndex];
-        if (!fishToSell) return;
-        const sellValue = getFishSellValue(fishToSell);
-        coins += sellValue;
-        updateCoinDisplay();
-        ownedFish.splice(fishIndex, 1);
-        renderFish();
-        renderSellFishList();
-        showToast(`Sold fish for ${Math.floor(sellValue)} coins!`);
-      }
-    });
-
-    // Sell Fish (tooltip button)
-    $("#fish-tooltip").on("click", ".sell-fish-button", function() {
-      const fishIndex = $("#fish-tooltip").data("fish-index");
-      if (fishIndex !== undefined) {
-        const fishToSell = ownedFish[fishIndex];
-        const sellValue = getFishSellValue(fishToSell);
-        coins += sellValue;
-        updateCoinDisplay();
-        ownedFish.splice(fishIndex, 1);
-        renderFish();
-        hideFishTooltip();
-        showToast(`Sold fish for ${Math.floor(sellValue)} coins!`);
-      }
-    });
-
-    // Rename Fish (tooltip button)
-    $("#fish-tooltip").on("click", ".rename-fish-button", function() {
-      const fishIndex = $("#fish-tooltip").data("fish-index");
-      if (fishIndex !== undefined) {
-        const newName = prompt("Enter a new name for your fish:");
-        if (newName) {
-          ownedFish[fishIndex].fishName = newName;
-          showToast(`Fish renamed to ${newName}!`);
-          hideFishTooltip();
-          renderFish();
-        }
-      }
-    });
-    $("#aquarium").on("click", function() {
-    spawnManualFood();
+// Handle Fish Shop button click
+$(".fish-shop-button").click(function() {
+  renderFishShop(); // You'll need to create this function similar to renderStore
+  openModal(".fish-shop-modal");
 });
-    // Buy Global Upgrades
-    $("#upgrade-items").on("click", "button", function() {
-      const upgId = parseInt($(this).data("id"));
-      if (upgId) {
-        const upg = globalUpgrades.find(u => u.id === upgId);
-        if (!upg || upg.purchased) return;
-        if (coins >= upg.cost) {
-          coins -= upg.cost;
-          upg.purchased = true;
-          upg.effect();
-          updateCoinDisplay();
-          renderGlobalUpgrades();
-          showToast(`Upgrade Purchased: ${upg.name}`);
-        } else {
-          showToast("Not enough coins!");
-        }
-      } else {
-        // Possibly a food upgrade
-        const foodType = $(this).data("food-upgrade");
-        if (foodType) {
-          const food = foodTypes.find(f => f.type === foodType);
-          if (!food) return;
-          if (coins >= food.upgradeCost) {
-            coins -= food.upgradeCost;
-            updateCoinDisplay();
-            if (food.type === "basic" || food.type === "premium" || food.type === "gold") {
-              food.coinValue += food.upgradeIncrement;
-            } else if (food.effectDuration) {
-              food.effectDuration += food.upgradeIncrement;
-            }
-            renderGlobalUpgrades();
-            showToast(`${food.type.charAt(0).toUpperCase() + food.type.slice(1)} Food Upgraded!`);
-            saveGame();
-          } else {
-            showToast("Not enough coins!");
-          }
-        }
-      }
-    });
 
-    // Buy Expansions
-    $("#expansion-items").on("click", "button", function() {
-      const expId = parseInt($(this).data("id"));
-      const ex = expansions.find(e => e.id === expId);
-      if (!ex) return;
-      if (coins >= ex.cost) {
-        coins -= ex.cost;
-        ex.purchasedCount++;
-        updateCoinDisplay();
-        renderExpansions();
-        checkAchievements();
-        showToast(`Expansion Purchased: ${ex.name}`);
-      } else {
-        showToast("Not enough coins!");
-      }
-    });
+// Modify the Store buy handler to show the reveal modal
+$("#store-items").on("click", "button", function() {
+  const fishId = parseInt($(this).data("id"));
+  const ft = allFishTypes.find(f => f.id === fishId);
+  if (!ft) return;
 
-    // Buy Decorations
-    $("#decoration-items").on("click", "button", function() {
-      const decId = parseInt($(this).data("decoration-id"));
-      const dec = decorations.find(d => d.id === decId);
-      if (!dec) return;
-      if (coins >= dec.cost) {
-        coins -= dec.cost;
-        updateCoinDisplay();
-        openModal(".decorations-modal");
-        showToast(`${dec.name} purchased! Click in aquarium to place.`);
-        $("#aquarium").one("click", function(e) {
-          const aquariumOffset = $("#aquarium").offset();
-          const placeX = e.pageX - aquariumOffset.left - (dec.type === "background" ? 0 : 32);
-          const placeY = e.pageY - aquariumOffset.top - (dec.type === "background" ? 0 : 32);
-          placedDecorations.push({
-            type: dec.type,
-            x: placeX,
-            y: placeY,
-            bgClass: dec.bgClass
-          });
-          renderDecorations();
-          checkAchievements();
-          $("#aquarium").off("click");
-        });
-      } else {
-        showToast("Not enough coins!");
-      }
-    });
+  // how many of this fish we already own:
+  const countOwnedForThisType = ownedFish.filter(x => x.id === ft.id).length;
+  const scaledCost = getScaledFishCost(fishId, countOwnedForThisType);
 
-    // Skill Tree Upgrades
-    $("#fish-skilltree-items").on("click", "button[data-skill-id]", function() {
-      const fishIndex = parseInt($(this).data("fish-index"));
-      const skillId = $(this).data("skill-id");
-      const fishObj = ownedFish[fishIndex];
-      const ft = allFishTypes.find(t => t.id === fishObj.id);
-      if (!ft) return;
+  if (coins >= scaledCost) {
+    coins -= scaledCost;
+    updateCoinDisplay();
 
-      const skill = (ft.skillTree || []).find(s => s.skillId === skillId);
-      if (!skill) return;
-      if (skill.level >= skill.maxLevel) return;
+    // apply upgrades
+    const totalSpeedUp = (ft.upgrades || []).find(u => u.id === `speed-${ft.id}`)?.purchasedCount || 0;
+    const totalEarningUp = (ft.upgrades || []).find(u => u.id === `earning-${ft.id}`)?.purchasedCount || 0;
 
-      if (coins >= skill.cost) {
-        coins -= skill.cost;
-        skill.level++;
-        if (skill.name.toLowerCase().includes("speed")) {
-          const match = skill.description.match(/\+(\d+)%/);
-          if (match) {
-            fishObj.currentSpeed *= (1 + parseFloat(match[1]) / 100);
-          }
-        } else if (skill.name.toLowerCase().includes("earning")) {
-          const match = skill.description.match(/\+(\d+)%/);
-          if (match) {
-            fishObj.currentEarning *= (1 + parseFloat(match[1]) / 100);
-          }
-        }
-        updateCoinDisplay();
-        renderFishSkillTrees();
-        showToast(`${skill.name} upgraded!`);
-      } else {
-        showToast("Not enough coins!");
-      }
-    });
-
-    // Breeding
-    const renderBreedingList = () => {
-      $("#breeding-fish-list").empty();
-      if (ownedFish.length < 2) {
-        $("#breeding-fish-list").append(`<p>You need at least 2 fish to breed.</p>`);
-        return;
-      }
-      let fishListHtml = `<select id="breed-fish-1"><option value="-1">Select Fish A</option>`;
-      ownedFish.forEach((fish, idx) => {
-        fishListHtml += `<option value="${idx}">${fish.fishName} (Lvl ${fish.level}, ID: ${fish.id})</option>`;
-      });
-      fishListHtml += `</select> `;
-
-      fishListHtml += `<select id="breed-fish-2"><option value="-1">Select Fish B</option>`;
-      ownedFish.forEach((fish, idx) => {
-        fishListHtml += `<option value="${idx}">${fish.fishName} (Lvl ${fish.level}, ID: ${fish.id})</option>`;
-      });
-      fishListHtml += `</select> `;
-
-      fishListHtml += `<button id="breed-button">Breed</button>`;
-
-      $("#breeding-fish-list").html(fishListHtml);
+    const newFish = {
+      id: ft.id,
+      name: ft.name,
+      x: Math.random() * ($(window).width() - 96),
+      y: Math.random() * ($(window).height() - 64),
+      direction: "right",
+      targetFoodId: null,
+      foodEaten: 0,
+      currentSpeed: ft.baseSpeed + totalSpeedUp,
+      currentEarning: ft.baseEarning + totalEarningUp,
+      targetX: Math.random() * ($(window).width() - 96),
+      targetY: Math.random() * ($(window).height() - 64),
+      level: 1,
+      experience: 0,
+      baseSpeed: ft.baseSpeed,
+      baseEarning: ft.baseEarning,
+      baseSellValue: ft.baseSellValue,
+      fishName: getRandomName(),
+      purchasePrice: scaledCost,
+      image: getRandomFishImage(ft.id) // Assign a random variant
     };
 
-    $("#breeding-content").on("click", "#breed-button", function() {
-      const idxA = parseInt($("#breed-fish-1").val());
-      const idxB = parseInt($("#breed-fish-2").val());
-      if (idxA < 0 || idxB < 0 || idxA === idxB) {
-        $("#breeding-result").text("Invalid selection.");
-        return;
-      }
-      const fishA = ownedFish[idxA];
-      const fishB = ownedFish[idxB];
-      if (!fishA || !fishB) {
-        $("#breeding-result").text("Invalid fish selection.");
-        return;
-      }
-      const baseSpeed = (fishA.baseSpeed + fishB.baseSpeed) / 2;
-      const baseEarning = (fishA.baseEarning + fishB.baseEarning) / 2;
-      // For a "mixed" fish, let's pick the lower ID's image, or just fishA's ID
-      const newFishId = (fishA.id < fishB.id) ? fishA.id : fishB.id;
-      const ft = allFishTypes.find(f => f.id === newFishId) || allFishTypes[0];
+    ownedFish.push(newFish);
+    // Re-render store so "Owned: x" updates
+    renderStore();
+    renderFish();
+    checkAchievements();
 
-      const babyFish = {
-  id: ft.id,
-  name: ft.name,
-  x: Math.random() * ($(window).width() - 96),
-  y: Math.random() * ($(window).height() - 64),
-  direction: "right",
-  targetFoodId: null,
-  foodEaten: 0,
-  currentSpeed: baseSpeed,
-  currentEarning: baseEarning,
-  targetX: Math.random() * ($(window).width() - 96),
-  targetY: Math.random() * ($(window).height() - 64),
-  level: 1,
-  experience: 0,
-  baseSpeed: baseSpeed,
-  baseEarning: baseEarning,
-  baseSellValue: Math.floor((getFishSellValue(fishA) + getFishSellValue(fishB)) / 4),
-  fishName: "Baby " + getRandomName(),
-  isBred: true,
-  purchasePrice: 0,
-  image: getRandomFishImage(ft.id) // Assign a random variant
-};
+    // Show a toast: "Fish bought!!" with that fish's image
+    showToast("Fish bought!!", ft.image);
 
-      ownedFish.push(babyFish);
-      $("#breeding-result").text("Breeding successful! A new baby fish is born.");
-      renderFish();
-      checkAchievements();
-    });
+    // Show Fish Reveal Modal
+    showFishRevealModal(newFish);
+  } else {
+    showToast("Not enough coins!");
+  }
+});
+
+// Modify the Breeding handler to show the reveal modal
+$("#breeding-content").on("click", "#breed-button", function() {
+  const idxA = parseInt($("#breed-fish-1").val());
+  const idxB = parseInt($("#breed-fish-2").val());
+  if (idxA < 0 || idxB < 0 || idxA === idxB) {
+    $("#breeding-result").text("Invalid selection.");
+    return;
+  }
+  const fishA = ownedFish[idxA];
+  const fishB = ownedFish[idxB];
+  if (!fishA || !fishB) {
+    $("#breeding-result").text("Invalid fish selection.");
+    return;
+  }
+  const baseSpeed = (fishA.baseSpeed + fishB.baseSpeed) / 2;
+  const baseEarning = (fishA.baseEarning + fishB.baseEarning) / 2;
+  // For a "mixed" fish, let's pick the lower ID's image, or just fishA's ID
+  const newFishId = (fishA.id < fishB.id) ? fishA.id : fishB.id;
+  const ft = allFishTypes.find(f => f.id === newFishId) || allFishTypes[0];
+
+  const babyFish = {
+    id: ft.id,
+    name: ft.name,
+    x: Math.random() * ($(window).width() - 96),
+    y: Math.random() * ($(window).height() - 64),
+    direction: "right",
+    targetFoodId: null,
+    foodEaten: 0,
+    currentSpeed: baseSpeed,
+    currentEarning: baseEarning,
+    targetX: Math.random() * ($(window).width() - 96),
+    targetY: Math.random() * ($(window).height() - 64),
+    level: 1,
+    experience: 0,
+    baseSpeed: baseSpeed,
+    baseEarning: baseEarning,
+    baseSellValue: Math.floor((getFishSellValue(fishA) + getFishSellValue(fishB)) / 4),
+    fishName: "Baby " + getRandomName(),
+    isBred: true,
+    purchasePrice: 0,
+    image: getRandomFishImage(ft.id) // Assign a random variant
+  };
+
+  ownedFish.push(babyFish);
+  renderFish();
+  checkAchievements();
+
+  // Show Fish Reveal Modal
+  showFishRevealModal(babyFish);
+
+  $("#breeding-result").text("Breeding successful! A new baby fish is born.");
+});
+
 
     // Space -> manual basic food
     $(document).keydown(e => {
