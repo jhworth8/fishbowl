@@ -460,11 +460,11 @@
           <div class="coin-display ms-4 text-primary fw-bold">
             Coins: <span id="coin-count">0</span>
           </div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
-            ☰
-          </button>
-        </span>
 
+        </span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            ⁝
+          </button>
         <div class="collapse navbar-collapse" id="navbarMenu">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <!-- Store Dropdown -->
@@ -2395,7 +2395,9 @@ $('#aquarium').on('click', function(e) {
         }
       }
     });
-
+    $("#aquarium").on("click", function() {
+    spawnManualFood();
+});
     // Buy Global Upgrades
     $("#upgrade-items").on("click", "button", function() {
       const upgId = parseInt($(this).data("id"));
