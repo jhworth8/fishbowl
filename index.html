@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Pixel Fish Aquarium Idle</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pVdF+9n1+G5j5eHfppqkZShQbQHHf1A6zhrLmlg5VtLQ3Twkq70eZkN3qE3hIXGKgEVdZELJ3tBVl0g4eW5o2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Fonts & Libraries -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -375,6 +376,24 @@ const analytics = getAnalytics(app);
     .fish-tooltip-actions button {
       margin: 0 5px;
     }
+/* Add this to your existing <style> block */
+
+  .navbar-toggler {
+    border: none; /* Remove default border */
+    background: transparent; /* Make background transparent */
+    font-size: 24px; /* Adjust icon size as needed */
+    color: #333; /* Icon color */
+}
+
+.navbar-toggler:focus {
+    outline: none; /* Remove focus outline */
+    box-shadow: none; /* Remove focus shadow */
+}
+
+/* Optional: Change icon color on hover */
+.navbar-toggler:hover {
+    color: #1e90ff; /* Example: Change to DodgerBlue on hover */
+}
 
     /* ************** ACHIEVEMENTS BUTTON BADGE ************** */
     .achievements-button {
@@ -494,11 +513,12 @@ const analytics = getAnalytics(app);
           <div class="coin-display ms-4 text-primary fw-bold">
             Coins: <span id="coin-count">0</span>
           </div>
-
-        </span>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
-            ⁝
-          </button>
+          ☰
+      </button>
+        </span>
+
+      
         <div class="collapse navbar-collapse" id="navbarMenu">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <!-- Store Dropdown -->
@@ -661,6 +681,10 @@ const analytics = getAnalytics(app);
 
   <script>
   $(document).ready(() => {
+    function getRandomFishImage(fishId) {
+  const variant = Math.floor(Math.random() * 8) + 1; // Generates a number between 1 and 8
+  return `fish_${fishId}.${variant}.png`;
+}
 
     //--------------
     /*
@@ -1344,24 +1368,25 @@ const analytics = getAnalytics(app);
     const initializeDefaultData = () => {
       coins = 0;
       ownedFish = [{
-        id: 1,
-        name: "Fish 1",
-        x: 100, y: 100,
-        direction: "right",
-        targetFoodId: null,
-        foodEaten: 0,
-        currentSpeed: 0.8,
-        currentEarning: 1,
-        targetX: 300,
-        targetY: 150,
-        level: 1,
-        experience: 0,
-        baseSpeed: 0.8,
-        baseEarning: 1,
-        baseSellValue: 25,
-        fishName: getRandomName(),   // Assign random name
-        purchasePrice: fishBaseCosts[1]
-      }];
+  id: 1,
+  name: "Fish 1",
+  x: 100, y: 100,
+  direction: "right",
+  targetFoodId: null,
+  foodEaten: 0,
+  currentSpeed: 0.8,
+  currentEarning: 1,
+  targetX: 300,
+  targetY: 150,
+  level: 1,
+  experience: 0,
+  baseSpeed: 0.8,
+  baseEarning: 1,
+  baseSellValue: 25,
+  fishName: getRandomName(),
+  purchasePrice: fishBaseCosts[1],
+  image: getRandomFishImage(1) // Assign a random variant
+}];
 
       globalUpgrades.forEach(u => { u.purchased = false; });
       expansions.forEach(e => { e.purchasedCount = 0; });
@@ -1393,9 +1418,9 @@ const analytics = getAnalytics(app);
       coins = parseFloat(localStorage.getItem("coins") || 0);
 
       ownedFish = JSON.parse(localStorage.getItem("ownedFish") || "[]");
-      ownedFish.forEach(f => {
-        const ft = allFishTypes.find(x => x.id === f.id);
-        if (!ft) return;
+  ownedFish.forEach(f => {
+    const ft = allFishTypes.find(x => x.id === f.id);
+    if (!ft) return;
         const totalSpeedUp = ft.upgrades?.find(u => u.id === `speed-${ft.id}`)?.purchasedCount || 0;
         const totalEarningUp = ft.upgrades?.find(u => u.id === `earning-${ft.id}`)?.purchasedCount || 0;
 
@@ -1406,12 +1431,18 @@ const analytics = getAnalytics(app);
         if (typeof f.level === "undefined") f.level = 1;
         if (typeof f.experience === "undefined") f.experience = 0;
         if (!f.fishName) {
-          f.fishName = getRandomName();
-        }
-        f.baseSpeed = ft.baseSpeed;
-        f.baseEarning = ft.baseEarning;
-        f.baseSellValue = ft.baseSellValue;
-      });
+      f.fishName = getRandomName();
+    }
+    f.baseSpeed = ft.baseSpeed;
+    f.baseEarning = ft.baseEarning;
+    f.baseSellValue = ft.baseSellValue;
+    
+    // Assign a random variant image if not present
+    if (!f.image) {
+      f.image = getRandomFishImage(f.id);
+    }
+  });
+
 
       if (ownedFish.length === 0) {
         const ft = allFishTypes[0];
@@ -1809,35 +1840,35 @@ $('#aquarium').on('click', function(e) {
 
     /* ======== FISH & FOOD RENDERING/LOGIC ======== */
     const renderFish = () => {
-      $("#aquarium .fish").remove();
-      ownedFish.forEach((f, index) => {
-        const ft = allFishTypes.find(type => type.id === f.id);
-        if (!ft) return;
+  $("#aquarium .fish").remove();
+  ownedFish.forEach((f, index) => {
+    const fishDiv = $(`<div class="fish" data-index="${index}"></div>`);
+    fishDiv.css({
+      left: f.x + "px",
+      top: f.y + "px",
+      backgroundImage: `url(${f.image})`, // Use the fish's own image variant
+      transform: f.direction === "left" ? "scaleX(-1)" : "scaleX(1)"
+    });
+    
+    // Mark legendary fish
+    if (f.id >= 15) {
+      fishDiv.addClass("legendary");
+    }
+    
+    $("#aquarium").append(fishDiv);
 
-        const fishDiv = $(`<div class="fish" data-index="${index}"></div>`);
-        fishDiv.css({
-          left: f.x + "px",
-          top: f.y + "px",
-          backgroundImage: `url(${ft.image})`,
-          transform: f.direction === "left" ? "scaleX(-1)" : "scaleX(1)"
-        });
-        // Mark legendary fish
-        if (f.id >= 15) {
-          fishDiv.addClass("legendary");
-        }
-        $("#aquarium").append(fishDiv);
+    if (f.levelingUp) {
+      fishDiv.addClass("level-up-shimmer");
+      fishDiv.append(`<div class="level-up-text">Level Up! Lvl. ${f.level}</div>`);
+      setTimeout(() => {
+        fishDiv.removeClass("level-up-shimmer");
+        fishDiv.find(".level-up-text").remove();
+        f.levelingUp = false;
+      }, 2000);
+    }
+  });
+};
 
-        if (f.levelingUp) {
-          fishDiv.addClass("level-up-shimmer");
-          fishDiv.append(`<div class="level-up-text">Level Up! Lvl. ${f.level}</div>`);
-          setTimeout(() => {
-            fishDiv.removeClass("level-up-shimmer");
-            fishDiv.find(".level-up-text").remove();
-            f.levelingUp = false;
-          }, 2000);
-        }
-      });
-    };
 
     const renderFoodItems = () => {
       $("#aquarium .food").remove();
@@ -2360,25 +2391,26 @@ $(document).on("click", function(event) {
         const totalEarningUp = (ft.upgrades || []).find(u => u.id === `earning-${ft.id}`)?.purchasedCount || 0;
 
         const newFish = {
-          id: ft.id,
-          name: ft.name,
-          x: Math.random() * ($(window).width() - 96),
-          y: Math.random() * ($(window).height() - 64),
-          direction: "right",
-          targetFoodId: null,
-          foodEaten: 0,
-          currentSpeed: ft.baseSpeed + totalSpeedUp,
-          currentEarning: ft.baseEarning + totalEarningUp,
-          targetX: Math.random() * ($(window).width() - 96),
-          targetY: Math.random() * ($(window).height() - 64),
-          level: 1,
-          experience: 0,
-          baseSpeed: ft.baseSpeed,
-          baseEarning: ft.baseEarning,
-          baseSellValue: ft.baseSellValue,
-          fishName: getRandomName(),          // NEW random name
-          purchasePrice: scaledCost           // track how much we purchased it for
-        };
+  id: ft.id,
+  name: ft.name,
+  x: Math.random() * ($(window).width() - 96),
+  y: Math.random() * ($(window).height() - 64),
+  direction: "right",
+  targetFoodId: null,
+  foodEaten: 0,
+  currentSpeed: ft.baseSpeed + totalSpeedUp,
+  currentEarning: ft.baseEarning + totalEarningUp,
+  targetX: Math.random() * ($(window).width() - 96),
+  targetY: Math.random() * ($(window).height() - 64),
+  level: 1,
+  experience: 0,
+  baseSpeed: ft.baseSpeed,
+  baseEarning: ft.baseEarning,
+  baseSellValue: ft.baseSellValue,
+  fishName: getRandomName(),
+  purchasePrice: scaledCost,
+  image: getRandomFishImage(ft.id) // Assign a random variant
+};
 
         ownedFish.push(newFish);
         // Re-render store so "Owned: x" updates
@@ -2604,26 +2636,28 @@ $(document).on("click", function(event) {
       const ft = allFishTypes.find(f => f.id === newFishId) || allFishTypes[0];
 
       const babyFish = {
-        id: ft.id,
-        name: ft.name,
-        x: Math.random() * ($(window).width() - 96),
-        y: Math.random() * ($(window).height() - 64),
-        direction: "right",
-        targetFoodId: null,
-        foodEaten: 0,
-        currentSpeed: baseSpeed,
-        currentEarning: baseEarning,
-        targetX: Math.random() * ($(window).width() - 96),
-        targetY: Math.random() * ($(window).height() - 64),
-        level: 1,
-        experience: 0,
-        baseSpeed: baseSpeed,
-        baseEarning: baseEarning,
-        baseSellValue: Math.floor((getFishSellValue(fishA) + getFishSellValue(fishB)) / 4),
-        fishName: "Baby " + getRandomName(), // baby fish gets random name with prefix
-        isBred: true,
-        purchasePrice: 0  // you didn't buy it, it's bred
-      };
+  id: ft.id,
+  name: ft.name,
+  x: Math.random() * ($(window).width() - 96),
+  y: Math.random() * ($(window).height() - 64),
+  direction: "right",
+  targetFoodId: null,
+  foodEaten: 0,
+  currentSpeed: baseSpeed,
+  currentEarning: baseEarning,
+  targetX: Math.random() * ($(window).width() - 96),
+  targetY: Math.random() * ($(window).height() - 64),
+  level: 1,
+  experience: 0,
+  baseSpeed: baseSpeed,
+  baseEarning: baseEarning,
+  baseSellValue: Math.floor((getFishSellValue(fishA) + getFishSellValue(fishB)) / 4),
+  fishName: "Baby " + getRandomName(),
+  isBred: true,
+  purchasePrice: 0,
+  image: getRandomFishImage(ft.id) // Assign a random variant
+};
+
       ownedFish.push(babyFish);
       $("#breeding-result").text("Breeding successful! A new baby fish is born.");
       renderFish();
